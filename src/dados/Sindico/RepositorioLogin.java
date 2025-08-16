@@ -1,6 +1,8 @@
 package dados.Sindico;
 
 import negocio.entidade.Sindico;
+
+import negocio.excecao.JaTemSindicoException;
 import utils.HashSenha;
 
 import java.io.*;
@@ -16,20 +18,14 @@ public class RepositorioLogin implements IRepositorioLogin {
 
     @Override
     public void cadastrarSindico(Sindico sindico) {
-        try {
-            if (NaoTemSindico()) {
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
-                    // grava nome-hash da senha
-                    writer.write(sindico.getNome() + "-" + sindico.getSenhaHash());
-                }
-                System.out.println("Síndico cadastrado com sucesso.");
-            } else {
-                throw new JaTemSindico();
+        if (NaoTemSindico()) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
+                writer.write(sindico.getNome() + "-" + sindico.getSenhaHash());
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao cadastrar síndico: " + e.getMessage(), e);
             }
-        } catch (JaTemSindico e) {
-            System.out.println(e.getMessage());
-        } catch (IOException e) {
-            System.out.println("Erro ao cadastrar síndico: " + e.getMessage());
+        } else {
+            throw new JaTemSindicoException();
         }
     }
 
@@ -62,15 +58,30 @@ public class RepositorioLogin implements IRepositorioLogin {
         return null;
     }
 
-    public boolean autenticar(String nome, String senhaDigitada) {
-        Sindico sindico = buscarSindico();
-        if (sindico == null) return false;
+    @Override
+    public boolean autenticar(String nome, String senha) {
+        String baseDir = System.getProperty("user.dir");
+        String caminho = baseDir + "/src/dados/sindico/sindico.txt";
 
-        // gera hash da senha digitada e compara com o hash armazenado
-        String hashDigitada = HashSenha.gerarHash(senhaDigitada);
+        try (BufferedReader leitor = new BufferedReader(new FileReader(caminho))) {
+            String linha = leitor.readLine();
+            if (linha != null) {
+                String[] partes = linha.split("-");
+                String nomeSalvo = partes[0];
+                String senhaHashSalva = partes[1];
 
-        return sindico.getNome().equals(nome) && hashDigitada.equals(sindico.getSenhaHash());
+                if (nome.equals(nomeSalvo) && HashSenha.gerarHash(senha).equals(senhaHashSalva)) {
+                    SessaoSindico.login(new Sindico(nome, senhaHashSalva));
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
+
 
     @Override
     public void removerSindico() {
