@@ -25,6 +25,7 @@ public class Main {
 
         if (repo.autenticar(loginNome, loginSenha)) {
             System.out.println("Login bem-sucedido!");
+            System.out.println("Testando!");
         } else {
             System.out.println("Nome ou senha incorretos.");
         }
