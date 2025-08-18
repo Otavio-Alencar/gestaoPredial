@@ -29,7 +29,7 @@ public interface IRepositorioLogin {
      * @return {@code true} se a autenticação for bem-sucedida, {@code false} caso contrário
      * @throws RuntimeException se não houver síndico cadastrado ou se as credenciais forem inválidas
      */
-    boolean autenticar(String nome, String senha);
+    Sindico autenticar(String nome, String senha);
 
 
     /**

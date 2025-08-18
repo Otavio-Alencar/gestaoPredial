@@ -10,5 +10,5 @@ public interface IRepositorioEdificio {
 
     void atualizarEdificio(Edificio edificio);
 
-
+    int buscarProximoQuartoLivre();
 }

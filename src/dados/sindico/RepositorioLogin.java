@@ -59,7 +59,7 @@ public class RepositorioLogin implements IRepositorioLogin {
     }
 
     @Override
-    public boolean autenticar(String nome, String senha) {
+    public Sindico autenticar(String nome, String senha) {
         String baseDir = System.getProperty("user.dir");
         String caminho = baseDir + "/src/dados/sindico/sindico.txt";
 
@@ -71,15 +71,15 @@ public class RepositorioLogin implements IRepositorioLogin {
                 String senhaHashSalva = partes[1];
 
                 if (nome.equals(nomeSalvo) && HashSenha.gerarHash(senha).equals(senhaHashSalva)) {
-                    SessaoSindico.login(new Sindico(nome, senhaHashSalva));
-                    return true;
+                    // Aqui retorno o sindico com a senha já hash
+                    return new Sindico(nomeSalvo, senhaHashSalva);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return false;
+        return null; // se não encontrou
     }
 
 

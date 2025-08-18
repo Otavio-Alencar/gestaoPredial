@@ -2,9 +2,13 @@ package dados.edificio;
 
 import negocio.entidade.Edificio;
 import dados.sindico.SessaoSindico;
+import negocio.entidade.Quarto;
+import negocio.enums.StatusQuarto;
 import negocio.excecao.SindicoJaTemEdificio;
 import negocio.excecao.SindicoNaoLogado;
 import negocio.excecao.SindicoNaoTemEdificio;
+
+import java.util.ArrayList;
 
 public class RepositorioEdificio implements IRepositorioEdificio {
     private Edificio edificio;
@@ -46,5 +50,16 @@ public class RepositorioEdificio implements IRepositorioEdificio {
         }else{
             throw new SindicoNaoLogado();
         }
+    }
+
+    @Override
+    public int buscarProximoQuartoLivre(){
+        for(Quarto q: edificio.getQuartos()){
+            if(q.getStatus() == StatusQuarto.LIVRE){
+                return q.getIdQuarto();
+            }
+        }
+
+        return -1;
     }
 }

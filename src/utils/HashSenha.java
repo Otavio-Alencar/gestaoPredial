@@ -17,4 +17,8 @@ public class HashSenha {
             throw new RuntimeException("Algoritmo SHA-256 não disponível", e);
         }
     }
+    public static boolean verificarHash(String senha, String hashSalvo) {
+        String hashDaSenha = gerarHash(senha);
+        return hashDaSenha.equals(hashSalvo);
+    }
 }
