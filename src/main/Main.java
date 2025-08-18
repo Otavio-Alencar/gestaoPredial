@@ -1,7 +1,6 @@
 package main;
 
-import dados.Sindico.RepositorioLogin;
-import dados.Sindico.SessaoSindico;
+import dados.sindico.RepositorioLogin;
 import negocio.entidade.Sindico;
 
 import java.util.Scanner;

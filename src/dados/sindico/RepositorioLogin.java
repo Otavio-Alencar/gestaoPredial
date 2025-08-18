@@ -1,4 +1,4 @@
-package dados.Sindico;
+package dados.sindico;
 
 import negocio.entidade.Sindico;
 

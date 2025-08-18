@@ -5,7 +5,7 @@ import utils.HashSenha;
 public class Sindico {
     private String nome;
     private String senhaHash;
-
+    private Edificio edificio;
 
     public Sindico(String nome, String senha) {
         this.nome = nome;
@@ -28,5 +28,13 @@ public class Sindico {
 
     public boolean validarSenha(String senhaDigitada) {
         return HashSenha.gerarHash(senhaDigitada).equals(this.senhaHash);
+    }
+
+    public Edificio getEdificio() {
+        return edificio;
+    }
+
+    public void setEdificio(Edificio edificio) {
+        this.edificio = edificio;
     }
 }
