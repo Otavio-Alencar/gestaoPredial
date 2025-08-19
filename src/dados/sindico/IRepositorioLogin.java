@@ -2,6 +2,8 @@ package dados.sindico;
 
 import negocio.entidade.Sindico;
 
+import java.io.IOException;
+
 public interface IRepositorioLogin {
 
 
@@ -14,7 +16,7 @@ public interface IRepositorioLogin {
      * @param sindico Objeto {@link Sindico} contendo nome e senha para cadastro.
      * @throws RuntimeException se já houver um síndico registrado no sistema.
      */
-    void cadastrarSindico(Sindico sindico);
+    void cadastrarSindico(Sindico sindico) throws IOException;
 
 
 
@@ -29,7 +31,7 @@ public interface IRepositorioLogin {
      * @return {@code true} se a autenticação for bem-sucedida, {@code false} caso contrário
      * @throws RuntimeException se não houver síndico cadastrado ou se as credenciais forem inválidas
      */
-    Sindico autenticar(String nome, String senha);
+    Sindico autenticar(String nome, String senha) throws IOException;
 
 
     /**
@@ -40,8 +42,8 @@ public interface IRepositorioLogin {
      *
      * @throws RuntimeException se não houver síndico cadastrado.
      */
-    void removerSindico();
-    void alterarSindico();
+    void removerSindico() throws IOException;
+
 
 
     /**
@@ -54,5 +56,7 @@ public interface IRepositorioLogin {
      * @return {@code true} se não houver sindico cadastrado, {@code false} caso contrário
      * @throws RuntimeException se não houver síndico cadastrado ou se as credenciais forem inválidas
      */
-    Boolean NaoTemSindico();
+    boolean naoTemSindico() throws IOException;
+
+    void alterarSindico(Sindico novoSindico) throws IOException;
 }

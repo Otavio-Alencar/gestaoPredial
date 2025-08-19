@@ -2,14 +2,16 @@ package iu.login;
 
 import dados.sindico.RepositorioLogin;
 import dados.sindico.SessaoSindico;
+import negocio.NegocioLogin;
 import negocio.entidade.Sindico;
+import negocio.excecao.JaTemSindicoException;
 
 import java.util.Scanner;
 
 public class Login {
 
     private final Scanner scanner = new Scanner(System.in);
-    private final RepositorioLogin repo = new RepositorioLogin();
+    private final NegocioLogin negocio = new NegocioLogin(new RepositorioLogin());
 
     public void menu() {
         while (true) {
@@ -39,11 +41,6 @@ public class Login {
     private void cadastrarSindico() {
         System.out.println("\n=== Cadastro de Síndico ===");
 
-        if (!repo.NaoTemSindico()) {
-            System.out.println("Já existe um síndico cadastrado.");
-            return;
-        }
-
         System.out.print("Digite o nome do síndico: ");
         String nome = scanner.nextLine();
 
@@ -55,8 +52,16 @@ public class Login {
             return;
         }
 
-        Sindico sindico = new Sindico(nome, senha); // senha gravada como texto
-        repo.cadastrarSindico(sindico);
+        Sindico sindico = new Sindico(nome, senha);
+
+        try {
+            negocio.cadastrarSindico(sindico);
+            System.out.println("Síndico cadastrado com sucesso!");
+        } catch (JaTemSindicoException e) {
+            System.out.println("Já existe um síndico cadastrado.");
+        } catch (RuntimeException e) {
+            System.out.println("Erro ao cadastrar: " + e.getMessage());
+        }
     }
 
     private void realizarLogin() {
@@ -68,13 +73,17 @@ public class Login {
         System.out.print("Digite a senha: ");
         String senha = scanner.nextLine();
 
-        Sindico sindico = repo.autenticar(nome, senha);
+        try {
+            Sindico sindico = negocio.autenticarSindico(nome, senha);
 
-        if (sindico != null) {
-            SessaoSindico.login(sindico); // login só aqui
-            System.out.println("Login bem-sucedido! Bem-vindo, " + sindico.getNome());
-        } else {
-            System.out.println("Nome ou senha incorretos.");
+            if (sindico != null) {
+                SessaoSindico.login(sindico);
+                System.out.println("Login bem-sucedido! Bem-vindo, " + sindico.getNome());
+            } else {
+                System.out.println("Nome ou senha incorretos.");
+            }
+        } catch (RuntimeException e) {
+            System.out.println("Erro ao autenticar: " + e.getMessage());
         }
     }
 

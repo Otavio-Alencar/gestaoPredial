@@ -54,7 +54,8 @@ public class RepositorioEdificio implements IRepositorioEdificio {
 
     @Override
     public int buscarProximoQuartoLivre(){
-        for(Quarto q: edificio.getQuartos()){
+        for(Quarto q: edificio.getQuartos()
+        ){
             if(q.getStatus() == StatusQuarto.LIVRE){
                 return q.getIdQuarto();
             }
