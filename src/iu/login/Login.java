@@ -18,17 +18,18 @@ public class Login {
             System.out.println("\n=== MENU ===");
             System.out.println("[1] Cadastrar Síndico");
             System.out.println("[2] Realizar Login");
-            System.out.println("[3] Ver Síndico Logado");
             System.out.println("[0] Sair");
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
-            scanner.nextLine(); // limpar buffer
+            scanner.nextLine();
 
             switch (opcao) {
                 case 1 -> cadastrarSindico();
-                case 2 -> realizarLogin();
-                case 3 -> mostrarSindicoLogado();
+                case 2 -> {
+                    realizarLogin();
+                    return;
+                }
                 case 0 -> {
                     System.out.println("Saindo...");
                     return;

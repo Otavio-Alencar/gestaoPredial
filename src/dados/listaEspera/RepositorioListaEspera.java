@@ -9,7 +9,7 @@ import negocio.entidade.ListaEspera;
 public class RepositorioListaEspera {
 
     private ListaEspera listaEspera;
-    private int contadorOrdem; // para controlar a ordem de chegada
+    private int contadorOrdem;
 
     public RepositorioListaEspera() {
         this.listaEspera = new ListaEspera();

@@ -1,6 +1,7 @@
 package dados.edificio;
 
 import negocio.entidade.Edificio;
+import negocio.entidade.Morador;
 
 
 public interface IRepositorioEdificio {
@@ -20,4 +21,5 @@ public interface IRepositorioEdificio {
     void atualizarEdificio(Edificio edificio);
 
     int buscarProximoQuartoLivre();
+    void preencherQuarto(Morador morador);
 }

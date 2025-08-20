@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import negocio.entidade.PessoaListaEspera;
 import dados.listaEspera.RepositorioListaEspera;
+import negocio.excecao.PessoaNaoEncontrada;
 
 public class NegocioListaEspera {
     private RepositorioListaEspera repositorio;
@@ -48,16 +49,14 @@ public class NegocioListaEspera {
         return fila.peek();
     }
 
-    public void listarFila() {
-        fila.stream()
+    public List<PessoaListaEspera> listarFila() {
+        return fila.stream()
                 .sorted((p1, p2) -> {
                     int diff = Integer.compare(p2.getTotalCotas(), p1.getTotalCotas());
                     if (diff != 0) return diff;
                     return Integer.compare(p1.getOrdemChegada(), p2.getOrdemChegada());
                 })
-                .forEach(p -> System.out.println(
-                        p.getNome() + " | Cotas: " + p.getTotalCotas() + " | Ordem: " + p.getOrdemChegada()
-                ));
+                .toList();
     }
 
     public void removerPessoa(String cpf) {
@@ -74,7 +73,7 @@ public class NegocioListaEspera {
             fila.remove(pessoaParaRemover);
             repositorio.removerPessoa(pessoaParaRemover.getCpf());
         } else {
-            System.out.println("Pessoa não encontrada na fila.");
+            throw new PessoaNaoEncontrada();
         }
     }
 

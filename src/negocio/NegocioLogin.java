@@ -57,4 +57,5 @@ public class NegocioLogin {
             throw new RuntimeException("Erro ao alterar síndico: " + e.getMessage(), e);
         }
     };
+
 }

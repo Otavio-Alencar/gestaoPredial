@@ -1,6 +1,7 @@
 package dados.edificio;
 
 import negocio.entidade.Edificio;
+import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
 import negocio.enums.StatusQuarto;
 
@@ -34,6 +35,15 @@ public class RepositorioEdificio implements IRepositorioEdificio {
             }
         }
         return -1;
+    }
+
+    public void preencherQuarto(Morador morador) {
+
+        Quarto quarto = edificio.getQuartoPorId(buscarProximoQuartoLivre());
+        quarto.setStatus(StatusQuarto.OCUPADO);
+        quarto.setMorador(morador);
+
+
     }
 
     public Edificio getEdificio() {

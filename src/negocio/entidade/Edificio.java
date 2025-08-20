@@ -39,6 +39,10 @@ public class Edificio {
         this.descricao = descricao;
     }
 
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
     public int getQuantidadeDeQuartos() {
         return quantidadeDeQuartos;
     }

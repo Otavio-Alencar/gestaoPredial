@@ -2,7 +2,11 @@ package negocio;
 
 import dados.edificio.IRepositorioEdificio;
 import negocio.entidade.Edificio;
+import negocio.entidade.Morador;
+import negocio.entidade.Quarto;
 import negocio.entidade.Sindico;
+import negocio.enums.StatusQuarto;
+import negocio.excecao.NenhumQuartoLivreException;
 import negocio.excecao.SindicoJaTemEdificio;
 import negocio.excecao.SindicoNaoLogado;
 import negocio.excecao.SindicoNaoTemEdificio;
@@ -56,5 +60,19 @@ public class NegocioEdificio {
 
     public int buscarProximoQuartoLivre() {
         return repo.buscarProximoQuartoLivre();
+    }
+
+    public boolean temEdificio(Sindico sindicoLogado) {
+        return sindicoLogado.getEdificio() != null;
+
+    }
+
+    public void preencherQuarto(Morador morador) {
+        if(buscarProximoQuartoLivre() != -1){
+            repo.preencherQuarto(morador);
+
+        }else{
+            throw new NenhumQuartoLivreException();
+        }
     }
 }
