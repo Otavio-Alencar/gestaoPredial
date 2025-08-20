@@ -1,7 +1,7 @@
 # Gestão Predial UFAPE
 
-O **Gestão Predial UFAPE** é um sistema desenvolvido em **Java** com o objetivo de auxiliar na administração de edifícios.  
-O projeto contempla funcionalidades como cadastro e edição de edifícios, gerenciamento de moradores e lista de espera, além de relatórios de gestão.
+O **Gestão Predial UFAPE** é um sistema desenvolvido em **Java** com o objetivo de auxiliar na administração do edifício universitário.  
+O projeto contempla funcionalidades como cadastro e edição de edifício, gerenciamento de moradores e lista de espera, além de relatórios de gestão.
 
 ## Tecnologias Utilizadas
 - **Java 17+**
