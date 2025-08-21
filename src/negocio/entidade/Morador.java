@@ -56,7 +56,8 @@ public class Morador {
         return numReclamacoes;
     }
 
-    public void adicionarReclamacao() {
+    public void adicionarReclamacao(String reclamacao) {
+        reclamacoes.add(reclamacao);
         this.numReclamacoes++;
     }
 }

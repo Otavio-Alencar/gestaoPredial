@@ -11,6 +11,7 @@ public class Menu {
     private final NegocioEdificio negocioEdificio = new NegocioEdificio(new RepositorioEdificio());
     private final EdificioIU edificioIU = new EdificioIU();
     private final ListaEsperaIU listaEsperaIU = new ListaEsperaIU();
+    private final MoradorIU moradorIU = new MoradorIU();
     public void menuPrincipal() {
         if (SessaoSindico.getSindicoLogado() == null) {
             System.out.println("Nenhum síndico logado. Acesse o login primeiro.");
@@ -54,7 +55,7 @@ public class Menu {
                         edificioIU.menuEdificio();
                     }
                     case 2 -> {
-                        return;
+                        moradorIU.menuMorador();
                     }
                     case 3 -> {
                         listaEsperaIU.menuListaEspera();

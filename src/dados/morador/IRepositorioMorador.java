@@ -10,5 +10,6 @@ public interface IRepositorioMorador {
     void editarMorador(Morador morador);
     void removerMorador(String cpf);
     ArrayList<Morador> listar();
-    void adicionarReclamacao(Morador morador);
+    void adicionarReclamacao(Morador morador,String reclamacao);
+
 }

@@ -4,6 +4,7 @@ import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
 import negocio.enums.StatusQuarto;
+import negocio.excecao.MoradorNaoEncontradoException;
 
 public class RepositorioEdificio implements IRepositorioEdificio {
     private Edificio edificio;
@@ -44,6 +45,22 @@ public class RepositorioEdificio implements IRepositorioEdificio {
         quarto.setMorador(morador);
 
 
+    }
+    @Override
+    public void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException {
+        if (morador == null) {
+            throw new IllegalArgumentException("Morador não pode ser nulo.");
+        }
+
+        for (Quarto q : edificio.getQuartos()) {
+            if (q.getStatus() == StatusQuarto.OCUPADO && q.getMorador().equals(morador)) {
+                q.setMorador(null);
+                q.setStatus(StatusQuarto.LIVRE);
+                return;
+            }
+        }
+
+        throw new MoradorNaoEncontradoException("Morador não encontrado em nenhum quarto ocupado.");
     }
 
     public Edificio getEdificio() {

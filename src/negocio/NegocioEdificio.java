@@ -6,10 +6,7 @@ import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
 import negocio.entidade.Sindico;
 import negocio.enums.StatusQuarto;
-import negocio.excecao.NenhumQuartoLivreException;
-import negocio.excecao.SindicoJaTemEdificio;
-import negocio.excecao.SindicoNaoLogado;
-import negocio.excecao.SindicoNaoTemEdificio;
+import negocio.excecao.*;
 
 public class NegocioEdificio {
 
@@ -73,6 +70,17 @@ public class NegocioEdificio {
 
         }else{
             throw new NenhumQuartoLivreException();
+        }
+    }
+
+    public void removerDoQuarto(Morador morador) {
+        try {
+            repo.removerDoQuarto(morador);
+            System.out.println("Quarto liberado com sucesso!");
+        } catch (MoradorNaoEncontradoException e) {
+            System.out.println("Erro: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("Erro de entrada: " + e.getMessage());
         }
     }
 }

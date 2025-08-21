@@ -2,6 +2,7 @@ package dados.edificio;
 
 import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
+import negocio.excecao.MoradorNaoEncontradoException;
 
 
 public interface IRepositorioEdificio {
@@ -22,4 +23,5 @@ public interface IRepositorioEdificio {
 
     int buscarProximoQuartoLivre();
     void preencherQuarto(Morador morador);
+    void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException;
 }
