@@ -18,7 +18,7 @@ public class Edificio {
         this.status = StatusEdificio.ATIVO;
         this.quartos = new ArrayList<>();
 
-        for(int i = 1; i < quantidadeDeQuartos; i++){
+        for(int i = 1; i <= quantidadeDeQuartos; i++){
             quartos.add(new Quarto(i));
         }
     }

@@ -11,7 +11,7 @@ import negocio.excecao.SindicoNaoLogado;
 import java.util.Scanner;
 
 public class EdificioIU {
-    private final NegocioEdificio negocioEdificio = new NegocioEdificio(new RepositorioEdificio());
+    private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia();
     private final Scanner scanner = new Scanner(System.in);
     public void cadastrarEdificio() {
         System.out.println("\n=== Cadastrar Edifício ===\n");

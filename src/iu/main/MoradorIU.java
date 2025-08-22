@@ -10,12 +10,12 @@ import negocio.excecao.ListaEsperaVazia;
 import negocio.excecao.NenhumQuartoLivreException;
 import negocio.excecao.PessoaNaoEncontrada;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MoradorIU {
+    // Agora usamos os singletons para Edificio, e instância única de Morador
     private final NegocioMorador negocioMorador = new NegocioMorador(new RepositorioMorador());
-    private final NegocioEdificio negocioEdificio = new NegocioEdificio(new RepositorioEdificio());
+    private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia();
     private final NegocioListaEspera negocioListaEspera = new NegocioListaEspera();
     private final Scanner scanner = new Scanner(System.in);
 
@@ -49,7 +49,10 @@ public class MoradorIU {
             var moradores = negocioMorador.listarMoradores();
             System.out.println("\n=== Lista de Moradores ===");
             for (Morador m : moradores) {
-                System.out.println("Nome: " + m.getNome() + " | CPF: " + m.getCpf() + " | Contato: " + m.getContato() + " | Status: "+ m.getStatus());
+                System.out.println("Nome: " + m.getNome()
+                        + " | CPF: " + m.getCpf()
+                        + " | Contato: " + m.getContato()
+                        + " | Status: " + m.getStatus());
             }
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
@@ -57,8 +60,12 @@ public class MoradorIU {
     }
 
     private void cadastrarMorador() {
+        if (negocioEdificio.getEdificio() == null) {
+            System.out.println("⚠ Nenhum edifício cadastrado. Cadastre o edifício primeiro.");
+            return;
+        }
         try {
-            negocioMorador.cadastrarMorador(negocioEdificio, negocioListaEspera);
+            negocioMorador.cadastrarMorador(negocioListaEspera);
             System.out.println("Morador adicionado com sucesso!");
         } catch (ListaEsperaVazia e) {
             System.out.println("Não há pessoas na lista de espera.");
@@ -71,12 +78,12 @@ public class MoradorIU {
         System.out.print("Digite o CPF do morador a ser removido: ");
         String cpf = scanner.nextLine();
         try {
-            negocioMorador.removerMorador(negocioEdificio, cpf);
+            negocioMorador.removerMorador(cpf);
             System.out.println("Morador removido com sucesso!");
         } catch (PessoaNaoEncontrada e) {
             System.out.println("Morador não encontrado.");
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Erro: " + e.getMessage());
         }
     }
 

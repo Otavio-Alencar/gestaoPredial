@@ -23,15 +23,22 @@ public class Quarto {
         return idQuarto;
     }
 
-    public void setIdQuarto(int idQuarto) {
-        this.idQuarto = idQuarto;
-    }
 
     public Morador getMorador() {
         return morador;
     }
 
-    public void setMorador(Morador morador) {
+    public void ocupar(Morador morador) {
         this.morador = morador;
+        this.status = StatusQuarto.OCUPADO;
+    }
+
+    public void liberar(){
+        this.morador = null;
+        this.status = StatusQuarto.LIVRE;
+    }
+
+    public boolean isOcupado() {
+        return this.status == StatusQuarto.OCUPADO;
     }
 }

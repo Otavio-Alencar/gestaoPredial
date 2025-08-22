@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 public class Menu {
     private final Scanner scanner = new Scanner(System.in);
-    private final NegocioEdificio negocioEdificio = new NegocioEdificio(new RepositorioEdificio());
+    private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia();
     private final EdificioIU edificioIU = new EdificioIU();
     private final ListaEsperaIU listaEsperaIU = new ListaEsperaIU();
     private final MoradorIU moradorIU = new MoradorIU();
@@ -55,10 +55,19 @@ public class Menu {
                         edificioIU.menuEdificio();
                     }
                     case 2 -> {
-                        moradorIU.menuMorador();
+                        if (negocioEdificio.getEdificio() == null) {
+                            System.out.println("⚠ Nenhum edifício cadastrado. Cadastre o edifício primeiro.");
+                        } else {
+                            moradorIU.menuMorador();
+                        }
                     }
                     case 3 -> {
-                        listaEsperaIU.menuListaEspera();
+                        if (negocioEdificio.getEdificio() == null) {
+                            System.out.println("⚠ Nenhum edifício cadastrado. Cadastre o edifício primeiro.");
+                        } else {
+                            listaEsperaIU.menuListaEspera();
+                        }
+
                     }
                     case 4 -> {
                         System.out.println("Saindo...");

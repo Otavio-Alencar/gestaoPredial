@@ -24,4 +24,6 @@ public interface IRepositorioEdificio {
     int buscarProximoQuartoLivre();
     void preencherQuarto(Morador morador);
     void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException;
+    Edificio getEdificio();
+
 }

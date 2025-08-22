@@ -5,10 +5,18 @@ import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
 import negocio.enums.StatusQuarto;
 import negocio.excecao.MoradorNaoEncontradoException;
+import negocio.excecao.NenhumQuartoLivreException;
 
 public class RepositorioEdificio implements IRepositorioEdificio {
+    private static RepositorioEdificio instancia;
     private Edificio edificio;
-
+    private RepositorioEdificio() {}
+    public static RepositorioEdificio getInstancia() {
+        if (instancia == null) {
+            instancia = new RepositorioEdificio();
+        }
+        return instancia;
+    }
     @Override
     public void adicionarEdificio(Edificio novoEdificio) {
         this.edificio = novoEdificio;
@@ -27,24 +35,27 @@ public class RepositorioEdificio implements IRepositorioEdificio {
     @Override
     public int buscarProximoQuartoLivre() {
         if (edificio == null || edificio.getQuartos() == null) {
-            return -1;
+            throw new IllegalStateException("Nenhum edifício cadastrado.");
         }
 
-        for (Quarto q : edificio.getQuartos()) {
-            if (q.getStatus() == StatusQuarto.LIVRE) {
-                return q.getIdQuarto();
+        for (int i = 0; i < edificio.getQuartos().size(); i++) {
+            if (!edificio.getQuartos().get(i).isOcupado()) {
+                return i;
             }
         }
         return -1;
     }
 
+
+    @Override
     public void preencherQuarto(Morador morador) {
-
-        Quarto quarto = edificio.getQuartoPorId(buscarProximoQuartoLivre());
-        quarto.setStatus(StatusQuarto.OCUPADO);
-        quarto.setMorador(morador);
-
-
+        for (Quarto q : edificio.getQuartos()) {
+            if (q.getStatus() == StatusQuarto.LIVRE) {
+                q.ocupar(morador);
+                return;
+            }
+        }
+        throw new NenhumQuartoLivreException();
     }
     @Override
     public void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException {
@@ -54,15 +65,14 @@ public class RepositorioEdificio implements IRepositorioEdificio {
 
         for (Quarto q : edificio.getQuartos()) {
             if (q.getStatus() == StatusQuarto.OCUPADO && q.getMorador().equals(morador)) {
-                q.setMorador(null);
-                q.setStatus(StatusQuarto.LIVRE);
+                q.liberar();
                 return;
             }
         }
 
         throw new MoradorNaoEncontradoException("Morador não encontrado em nenhum quarto ocupado.");
     }
-
+    @Override
     public Edificio getEdificio() {
         return edificio;
     }
