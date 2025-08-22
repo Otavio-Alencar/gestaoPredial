@@ -25,7 +25,7 @@ public class Menu {
         while (!sair) {
             System.out.println("\n=== O que deseja fazer? ===");
 
-            if (!negocioEdificio.temEdificio(SessaoSindico.getSindicoLogado())) {
+            if (!negocioEdificio.temEdificio()) {
                 System.out.println("[1] Cadastrar Edifício");
                 System.out.println("[2] Sair");
             } else {
@@ -39,7 +39,7 @@ public class Menu {
             int opcao = scanner.nextInt();
             scanner.nextLine(); // limpar buffer
 
-            if (!negocioEdificio.temEdificio(SessaoSindico.getSindicoLogado())) {
+            if (!negocioEdificio.temEdificio()) {
                 switch (opcao) {
                     case 1 -> edificioIU.cadastrarEdificio();
                     case 2 -> {

@@ -1,18 +1,22 @@
 package negocio;
-import java.util.PriorityQueue;
-import java.util.List;
-import java.util.ArrayList;
-import negocio.entidade.PessoaListaEspera;
+
 import dados.listaEspera.RepositorioListaEspera;
+import negocio.entidade.PessoaListaEspera;
 import negocio.excecao.PessoaNaoEncontrada;
 
-public class NegocioListaEspera {
-    private RepositorioListaEspera repositorio;
-    private PriorityQueue<PessoaListaEspera> fila;
-    int contadorOrdem;
+import java.util.List;
+import java.util.PriorityQueue;
 
-    public NegocioListaEspera() {
-        repositorio = new RepositorioListaEspera();
+public class NegocioListaEspera {
+
+    private static NegocioListaEspera instancia;
+
+    private final RepositorioListaEspera repositorio;
+    private final PriorityQueue<PessoaListaEspera> fila;
+    private int contadorOrdem;
+
+    private NegocioListaEspera() {
+        repositorio = RepositorioListaEspera.getInstancia();
         contadorOrdem = 1;
 
         fila = new PriorityQueue<>(
@@ -22,6 +26,16 @@ public class NegocioListaEspera {
                     return Integer.compare(p1.getOrdemChegada(), p2.getOrdemChegada());
                 }
         );
+
+        // Carrega os dados persistidos
+        fila.addAll(repositorio.getPessoas());
+    }
+
+    public static NegocioListaEspera getInstancia() {
+        if (instancia == null) {
+            instancia = new NegocioListaEspera();
+        }
+        return instancia;
     }
 
     public void adicionarPessoa(String nome, String cpf, String contato,
@@ -33,8 +47,7 @@ public class NegocioListaEspera {
         );
 
         fila.add(pessoa);
-        repositorio.adicionarPessoa(
-                nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda);
+        repositorio.adicionarPessoa(nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda);
     }
 
     public PessoaListaEspera chamarProxima() {
@@ -61,7 +74,6 @@ public class NegocioListaEspera {
 
     public void removerPessoa(String cpf) {
         PessoaListaEspera pessoaParaRemover = null;
-
         for (PessoaListaEspera p : fila) {
             if (p.getCpf().equals(cpf)) {
                 pessoaParaRemover = p;
@@ -77,4 +89,7 @@ public class NegocioListaEspera {
         }
     }
 
+    public boolean temPessoas() {
+        return !fila.isEmpty();
+    }
 }

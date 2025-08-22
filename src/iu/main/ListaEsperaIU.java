@@ -1,6 +1,5 @@
 package iu.main;
 
-
 import negocio.NegocioListaEspera;
 import negocio.entidade.PessoaListaEspera;
 
@@ -8,21 +7,23 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ListaEsperaIU {
-    private final NegocioListaEspera negocioListaEspera = new NegocioListaEspera();
+
+    private final NegocioListaEspera negocioListaEspera =  NegocioListaEspera.getInstancia();
     private final Scanner scanner = new Scanner(System.in);
-    public void menuListaEspera(){
+
+    public void menuListaEspera() {
         boolean voltar = false;
         while (!voltar) {
             System.out.println("\n=== Menu da Lista de Espera ===");
-            System.out.println("[1] Ver Lista de espera");
+            System.out.println("[1] Ver Lista de Espera");
             System.out.println("[2] Adicionar Pessoa");
             System.out.println("[3] Remover Pessoa");
-            System.out.println("[4] Gerar relatório");
+            System.out.println("[4] Gerar Relatório");
             System.out.println("[5] Voltar");
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
-            scanner.nextLine();
+            scanner.nextLine(); // consumir quebra de linha
 
             switch (opcao) {
                 case 1 -> verListaEspera();
@@ -35,10 +36,17 @@ public class ListaEsperaIU {
         }
     }
 
-    private void verListaEspera(){
+    private void verListaEspera() {
         List<PessoaListaEspera> lista = negocioListaEspera.listarFila();
+        if (lista.isEmpty()) {
+            System.out.println("⚠️ A lista de espera está vazia.");
+            return;
+        }
 
-        lista.forEach(p->System.out.println(p.getNome() + " | Cotas: " + p.getTotalCotas() + " | Ordem: " + p.getOrdemChegada()));
+        System.out.println("\n=== Pessoas na Lista de Espera ===");
+        lista.forEach(p -> System.out.println(
+                p.getNome() + " | Cotas: " + p.getTotalCotas() + " | Ordem: " + p.getOrdemChegada()
+        ));
     }
 
     private void cadastrarPessoa() {
@@ -54,7 +62,6 @@ public class ListaEsperaIU {
         boolean escolaPublica = lerBoolean("Estudou em Escola Pública? (s/n)");
         boolean baixaRenda = lerBoolean("É de Baixa Renda? (s/n)");
 
-        // chama o negócio para cadastrar
         negocioListaEspera.adicionarPessoa(
                 nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda
         );
@@ -62,6 +69,37 @@ public class ListaEsperaIU {
         System.out.println("\n✅ Pessoa adicionada com sucesso à lista de espera!");
     }
 
+    private void removerPessoa() {
+        System.out.println("\n=== Remover Pessoa na Lista de Espera ===");
+        String cpf = lerTextoObrigatorio("Qual o CPF da pessoa que deseja remover");
+
+        try {
+            negocioListaEspera.removerPessoa(cpf);
+            System.out.println("✅ Removido com sucesso!");
+        } catch (Exception e) {
+            System.out.println("⚠️ Pessoa não encontrada na lista de espera.");
+        }
+    }
+
+    private void gerarRelatorio() {
+        System.out.println("\n=== Relatório da Lista de Espera ===");
+        List<PessoaListaEspera> lista = negocioListaEspera.listarFila();
+
+        if (lista.isEmpty()) {
+            System.out.println("A lista está vazia.");
+            return;
+        }
+
+        for (PessoaListaEspera p : lista) {
+            System.out.println("Nome: " + p.getNome() +
+                    " | CPF: " + p.getCpf() +
+                    " | Contato: " + p.getContato() +
+                    " | Cotas: " + p.getTotalCotas() +
+                    " | Ordem: " + p.getOrdemChegada());
+        }
+    }
+
+    // ================= Métodos auxiliares =================
 
     private String lerTextoObrigatorio(String campo) {
         String valor;
@@ -69,7 +107,7 @@ public class ListaEsperaIU {
             System.out.print(campo + ": ");
             valor = scanner.nextLine().trim();
             if (valor.isEmpty()) {
-                System.out.println("⚠️  O campo '" + campo + "' não pode ficar vazio. Tente novamente.");
+                System.out.println("⚠️ O campo '" + campo + "' não pode ficar vazio. Tente novamente.");
             }
         } while (valor.isEmpty());
         return valor;
@@ -84,18 +122,7 @@ public class ListaEsperaIU {
             if (resposta.equals("s")) return true;
             if (resposta.equals("n")) return false;
 
-            System.out.println("⚠️  Resposta inválida. Digite apenas 's' para sim ou 'n' para não.");
+            System.out.println("⚠️ Resposta inválida. Digite apenas 's' para sim ou 'n' para não.");
         }
-    }
-
-    private void removerPessoa(){
-        System.out.println("\n=== Remover Pessoa na Lista de Espera ===");
-        String cpf = lerTextoObrigatorio("Qual o cpf da pessoa que deseja remover");
-        negocioListaEspera.removerPessoa(cpf);
-        System.out.println("Removido com sucesso!");
-    }
-
-    private void gerarRelatorio(){
-        System.out.println("\n=== Relatorio de Pessoas ===");
     }
 }

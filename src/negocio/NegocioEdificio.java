@@ -9,15 +9,14 @@ import negocio.excecao.*;
 
 public class NegocioEdificio {
 
-    private static NegocioEdificio instancia; // atributo estático para o singleton
+    private static NegocioEdificio instancia; // singleton do próprio edificio
+
     private final IRepositorioEdificio repo;
 
-    // Construtor privado para impedir múltiplas instâncias
-    private NegocioEdificio() {
-        this.repo = RepositorioEdificio.getInstancia();
+    private NegocioEdificio() { // construtor privado
+        repo = RepositorioEdificio.getInstancia(); // usa singleton do repositório
     }
 
-    // Método público para acessar a única instância
     public static NegocioEdificio getInstancia() {
         if (instancia == null) {
             instancia = new NegocioEdificio();
@@ -26,34 +25,25 @@ public class NegocioEdificio {
     }
 
     public void adicionarEdificio(Sindico sindicoLogado, Edificio edificio) {
-        if (sindicoLogado == null) {
-            throw new SindicoNaoLogado();
-        }
-        if (sindicoLogado.getEdificio() != null) {
-            throw new SindicoJaTemEdificio();
-        }
+        if (sindicoLogado == null) throw new SindicoNaoLogado();
+        if (sindicoLogado.getEdificio() != null) throw new SindicoJaTemEdificio();
+
         repo.adicionarEdificio(edificio);
         sindicoLogado.setEdificio(edificio);
     }
 
     public void removerEdificio(Sindico sindicoLogado) {
-        if (sindicoLogado == null) {
-            throw new SindicoNaoLogado();
-        }
-        if (sindicoLogado.getEdificio() == null) {
-            throw new SindicoNaoTemEdificio();
-        }
+        if (sindicoLogado == null) throw new SindicoNaoLogado();
+        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificio();
+
         repo.removerEdificio();
         sindicoLogado.setEdificio(null);
     }
 
     public void atualizarEdificio(Sindico sindicoLogado, Edificio novoEdificio) {
-        if (sindicoLogado == null) {
-            throw new SindicoNaoLogado();
-        }
-        if (sindicoLogado.getEdificio() == null) {
-            throw new SindicoNaoTemEdificio();
-        }
+        if (sindicoLogado == null) throw new SindicoNaoLogado();
+        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificio();
+
         repo.atualizarEdificio(novoEdificio);
         sindicoLogado.setEdificio(novoEdificio);
     }
@@ -62,8 +52,8 @@ public class NegocioEdificio {
         return repo.buscarProximoQuartoLivre();
     }
 
-    public boolean temEdificio(Sindico sindicoLogado) {
-        return sindicoLogado.getEdificio() != null;
+    public boolean temEdificio() {
+        return repo.getEdificio() != null;
     }
 
     public Edificio getEdificio() {

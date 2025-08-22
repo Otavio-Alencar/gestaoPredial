@@ -1,7 +1,7 @@
 package iu.main;
 
-import dados.edificio.RepositorioEdificio;
 import dados.morador.RepositorioMorador;
+import dados.sindico.SessaoSindico;
 import negocio.NegocioEdificio;
 import negocio.NegocioListaEspera;
 import negocio.NegocioMorador;
@@ -13,10 +13,10 @@ import negocio.excecao.PessoaNaoEncontrada;
 import java.util.Scanner;
 
 public class MoradorIU {
-    // Agora usamos os singletons para Edificio, e instância única de Morador
+
     private final NegocioMorador negocioMorador = new NegocioMorador(new RepositorioMorador());
-    private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia();
-    private final NegocioListaEspera negocioListaEspera = new NegocioListaEspera();
+    private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia(); // singleton
+    private final NegocioListaEspera negocioListaEspera = NegocioListaEspera.getInstancia();
     private final Scanner scanner = new Scanner(System.in);
 
     public void menuMorador() {
@@ -60,17 +60,17 @@ public class MoradorIU {
     }
 
     private void cadastrarMorador() {
-        if (negocioEdificio.getEdificio() == null) {
+        if (!negocioEdificio.temEdificio()) {
             System.out.println("⚠ Nenhum edifício cadastrado. Cadastre o edifício primeiro.");
             return;
         }
         try {
             negocioMorador.cadastrarMorador(negocioListaEspera);
-            System.out.println("Morador adicionado com sucesso!");
+            System.out.println("✅ Morador adicionado com sucesso!");
         } catch (ListaEsperaVazia e) {
-            System.out.println("Não há pessoas na lista de espera.");
+            System.out.println("⚠ Não há pessoas na lista de espera.");
         } catch (NenhumQuartoLivreException e) {
-            System.out.println("Não há quartos disponíveis.");
+            System.out.println("⚠ Não há quartos disponíveis.");
         }
     }
 
@@ -78,10 +78,14 @@ public class MoradorIU {
         System.out.print("Digite o CPF do morador a ser removido: ");
         String cpf = scanner.nextLine();
         try {
+            Morador m = negocioMorador.buscarMorador(cpf);
+            if (m == null) {
+                throw new PessoaNaoEncontrada();
+            }
             negocioMorador.removerMorador(cpf);
-            System.out.println("Morador removido com sucesso!");
+            System.out.println("✅ Morador removido com sucesso!");
         } catch (PessoaNaoEncontrada e) {
-            System.out.println("Morador não encontrado.");
+            System.out.println("⚠ Morador não encontrado.");
         } catch (RuntimeException e) {
             System.out.println("Erro: " + e.getMessage());
         }
@@ -95,9 +99,9 @@ public class MoradorIU {
 
         try {
             negocioMorador.adicionarReclamacao(cpf, reclamacao);
-            System.out.println("Reclamação registrada com sucesso!");
+            System.out.println("✅ Reclamação registrada com sucesso!");
         } catch (PessoaNaoEncontrada e) {
-            System.out.println("Morador não encontrado.");
+            System.out.println("⚠ Morador não encontrado.");
         }
     }
 }
