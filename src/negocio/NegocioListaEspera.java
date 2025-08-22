@@ -27,7 +27,7 @@ public class NegocioListaEspera {
                 }
         );
 
-        // Carrega os dados persistidos
+        // Carrega os dados persistidos do repositório
         fila.addAll(repositorio.getPessoas());
     }
 

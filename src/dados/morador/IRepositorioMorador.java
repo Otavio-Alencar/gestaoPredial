@@ -1,15 +1,13 @@
 package dados.morador;
 
+import dados.base.IRepositorioBase;
 import negocio.entidade.Morador;
+import java.util.List;
 
-import java.util.ArrayList;
-
-
-public interface IRepositorioMorador {
+public interface IRepositorioMorador extends IRepositorioBase<Morador> {
     void cadastrarMorador(Morador morador);
     void editarMorador(Morador morador);
     void removerMorador(String cpf);
-    ArrayList<Morador> listar();
-    void adicionarReclamacao(Morador morador,String reclamacao);
-
+    void adicionarReclamacao(Morador morador, String reclamacao);
+    List<Morador> listar();
 }

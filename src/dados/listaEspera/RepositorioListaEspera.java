@@ -9,10 +9,10 @@ import java.util.List;
 public class RepositorioListaEspera {
 
     private static RepositorioListaEspera instancia;
-    private ListaEspera listaEspera;
+    private final ListaEspera listaEspera;
     private int contadorOrdem;
 
-    private RepositorioListaEspera() { // construtor privado
+    private RepositorioListaEspera() {
         this.listaEspera = new ListaEspera();
         this.contadorOrdem = 1;
     }
@@ -42,6 +42,7 @@ public class RepositorioListaEspera {
     }
 
     public List<PessoaListaEspera> getPessoas() {
+        // Retorna uma cópia da lista para evitar manipulação externa
         return new ArrayList<>(listaEspera.getListaEspera());
     }
 }

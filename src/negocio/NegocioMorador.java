@@ -12,6 +12,7 @@ import negocio.NegocioListaEspera;
 import dados.sindico.SessaoSindico;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NegocioMorador {
 
@@ -45,7 +46,7 @@ public class NegocioMorador {
     }
 
     public void removerMorador(String cpf) {
-        ArrayList<Morador> moradores = repoMorador.listar();
+        List<Morador> moradores = repoMorador.listar();
         if (moradores.isEmpty()) {
             throw new RuntimeException("Nenhum morador registrado");
         }
@@ -88,8 +89,8 @@ public class NegocioMorador {
         }
     }
 
-    public ArrayList<Morador> listarMoradores() {
-        ArrayList<Morador> moradores = repoMorador.listar();
+    public List<Morador> listarMoradores() {
+        List<Morador> moradores = repoMorador.listar();
         if (moradores.isEmpty()) {
             throw new RuntimeException("Nenhum morador cadastrado no sistema.");
         }

@@ -4,16 +4,13 @@ import negocio.enums.StatusMorador;
 
 import java.util.ArrayList;
 
-public class Morador {
-    private String nome,cpf,contato;
+public class Morador extends Pessoa {
     private int numReclamacoes;
     private ArrayList<String> reclamacoes;
     private StatusMorador status;
 
     public Morador(String nome, String cpf, String contato) {
-        this.nome = nome;
-        this.cpf = cpf;
-        this.contato = contato;
+        super(nome, cpf, contato);
         reclamacoes = new ArrayList<>();
         this.status = StatusMorador.VALIDO;
     }
@@ -26,30 +23,6 @@ public class Morador {
         if(status == StatusMorador.VALIDO) {
             status = StatusMorador.EXCEDIDO;
         }
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getContato() {
-        return contato;
-    }
-
-    public void setContato(String contato) {
-        this.contato = contato;
     }
 
     public int getNumReclamacoes() {

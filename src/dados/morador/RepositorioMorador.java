@@ -1,25 +1,21 @@
 package dados.morador;
 
+import dados.base.RepositorioBase;
 import negocio.entidade.Morador;
-import java.util.ArrayList;
+import java.util.List;
 
-public class RepositorioMorador implements IRepositorioMorador {
-
-    private ArrayList<Morador> listaMoradores = new ArrayList<>();
+public class RepositorioMorador extends RepositorioBase<Morador> implements IRepositorioMorador {
 
     @Override
     public void cadastrarMorador(Morador morador) {
-        if (morador == null) {
-            throw new IllegalArgumentException("Morador não pode ser nulo");
-        }
-        listaMoradores.add(morador);
+        adicionar(morador); // método herdado da base
     }
 
     @Override
     public void editarMorador(Morador morador) {
-        for (int i = 0; i < listaMoradores.size(); i++) {
-            if (listaMoradores.get(i).getCpf().equals(morador.getCpf())) {
-                listaMoradores.set(i, morador);
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getCpf().equals(morador.getCpf())) {
+                lista.set(i, morador);
                 return;
             }
         }
@@ -28,17 +24,29 @@ public class RepositorioMorador implements IRepositorioMorador {
 
     @Override
     public void removerMorador(String cpf) {
-        boolean removido = listaMoradores.removeIf(m -> m.getCpf().equals(cpf));
-        if (!removido) {
+        Morador morador = lista.stream()
+                .filter(m -> m.getCpf().equals(cpf))
+                .findFirst()
+                .orElse(null);
+
+        if (morador != null) {
+            remover(morador); // chama o método genérico
+        } else {
             throw new RuntimeException("Nenhum morador encontrado com CPF: " + cpf);
         }
     }
 
-
+    @Override
+    public void remover(Morador morador) {
+        boolean removido = lista.removeIf(m -> m.getCpf().equals(morador.getCpf()));
+        if (!removido) {
+            throw new RuntimeException("Nenhum morador encontrado com CPF: " + morador.getCpf());
+        }
+    }
 
     @Override
-    public void adicionarReclamacao(Morador morador,String reclamacao) {
-        for (Morador m : listaMoradores) {
+    public void adicionarReclamacao(Morador morador, String reclamacao) {
+        for (Morador m : lista) {
             if (m.getCpf().equals(morador.getCpf())) {
                 m.adicionarReclamacao(reclamacao);
                 if (m.getNumReclamacoes() > 3) {
@@ -51,7 +59,7 @@ public class RepositorioMorador implements IRepositorioMorador {
     }
 
     @Override
-    public ArrayList<Morador> listar() {
-        return new ArrayList<>(listaMoradores);
+    public List<Morador> listar() {
+        return super.listar();
     }
 }

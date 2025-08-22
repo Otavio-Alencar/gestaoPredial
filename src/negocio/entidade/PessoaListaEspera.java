@@ -1,7 +1,6 @@
 package negocio.entidade;
 
-public class PessoaListaEspera {
-    private String nome, cpf, contato;
+public class PessoaListaEspera extends Pessoa { ;
     private boolean ppi,quilombola,pcd,escolaPublica,baixaRenda;
     private int ordemChegada;
 
@@ -9,9 +8,7 @@ public class PessoaListaEspera {
                              boolean ppi, boolean quilombola, boolean pcd,
                              boolean escolaPublica, boolean baixaRenda,
                              int ordemChegada) {
-        this.nome = nome;
-        this.cpf = cpf;
-        this.contato = contato;
+        super(nome, cpf, contato);
         this.ppi = ppi;
         this.quilombola = quilombola;
         this.pcd = pcd;
@@ -32,30 +29,6 @@ public class PessoaListaEspera {
 
     public int getOrdemChegada() {
         return ordemChegada;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public String getContato() {
-        return contato;
-    }
-
-    public void setContato(String contato) {
-        this.contato = contato;
     }
 
     public boolean isPpi() {
