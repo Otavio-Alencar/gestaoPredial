@@ -1,5 +1,6 @@
 package dados.listaEspera;
 
+import dados.persistencia.PersistenciaListaEsperaTXT;
 import negocio.entidade.PessoaListaEspera;
 import negocio.entidade.ListaEspera;
 
@@ -10,11 +11,21 @@ public class RepositorioListaEspera {
 
     private static RepositorioListaEspera instancia;
     private final ListaEspera listaEspera;
+    private final PersistenciaListaEsperaTXT persistencia;
     private int contadorOrdem;
 
     private RepositorioListaEspera() {
-        this.listaEspera = new ListaEspera();
-        this.contadorOrdem = 1;
+        String baseDir = System.getProperty("user.dir");
+        String caminhoArquivo = baseDir + "/src/dados/listaEspera/lista_espera.txt";
+        persistencia = new PersistenciaListaEsperaTXT(caminhoArquivo);
+
+        // Carrega do arquivo ou cria nova lista se inexistente
+        listaEspera = persistencia.carregar();
+        // Define contadorOrdem baseado na última pessoa adicionada
+        contadorOrdem = listaEspera.getListaEspera().stream()
+                .mapToInt(PessoaListaEspera::getOrdemChegada)
+                .max()
+                .orElse(0) + 1;
     }
 
     public static RepositorioListaEspera getInstancia() {
@@ -31,10 +42,12 @@ public class RepositorioListaEspera {
                 nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda, contadorOrdem++
         );
         listaEspera.getListaEspera().add(pessoa);
+        persistencia.salvar(listaEspera);
     }
 
     public void removerPessoa(String cpf) {
         listaEspera.getListaEspera().removeIf(p -> p.getCpf().equals(cpf));
+        persistencia.salvar(listaEspera);
     }
 
     public int tamanhoFila() {
@@ -42,7 +55,6 @@ public class RepositorioListaEspera {
     }
 
     public List<PessoaListaEspera> getPessoas() {
-        // Retorna uma cópia da lista para evitar manipulação externa
         return new ArrayList<>(listaEspera.getListaEspera());
     }
 }

@@ -17,8 +17,14 @@ public class NegocioListaEspera {
 
     private NegocioListaEspera() {
         repositorio = RepositorioListaEspera.getInstancia();
-        contadorOrdem = 1;
 
+        // Inicializa contador baseado na última pessoa persistida
+        contadorOrdem = repositorio.getPessoas().stream()
+                .mapToInt(PessoaListaEspera::getOrdemChegada)
+                .max()
+                .orElse(0) + 1;
+
+        // Inicializa fila com ordenação por total de cotas e ordem de chegada
         fila = new PriorityQueue<>(
                 (p1, p2) -> {
                     int diff = Integer.compare(p2.getTotalCotas(), p1.getTotalCotas());
@@ -27,7 +33,6 @@ public class NegocioListaEspera {
                 }
         );
 
-        // Carrega os dados persistidos do repositório
         fila.addAll(repositorio.getPessoas());
     }
 
