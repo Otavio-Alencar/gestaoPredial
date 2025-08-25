@@ -5,6 +5,7 @@ import negocio.entidade.Endereco;
 import negocio.entidade.Quarto;
 import negocio.entidade.Morador;
 import negocio.enums.StatusEdificio;
+import negocio.enums.StatusQuarto;
 
 import java.io.*;
 import java.nio.file.*;
@@ -58,10 +59,27 @@ public class PersistenciaEdificioTXT {
             String status = mapa.getOrDefault("status", "ATIVO");
             e.setStatus(StatusEdificio.valueOf(status));
 
-            // carregar ocupação dos quartos e associar moradores
+            // carregar detalhes dos quartos e moradores
             for (Quarto q : e.getQuartos()) {
-                String ocupado = mapa.get("quarto." + q.getIdQuarto() + ".ocupado");
-                String nomeMorador = mapa.get("quarto." + q.getIdQuarto() + ".morador");
+                String prefixo = "quarto." + q.getIdQuarto();
+                boolean ocupado = Boolean.parseBoolean(mapa.getOrDefault(prefixo + ".ocupado", "false"));
+                q.setStatus(ocupado ? StatusQuarto.OCUPADO : StatusQuarto.LIVRE);
+
+                if (ocupado) {
+                    String nome = mapa.get(prefixo + ".morador.nome");
+                    String cpf = mapa.get(prefixo + ".morador.cpf");
+                    String contato = mapa.get(prefixo + ".morador.contato");
+                    Morador morador = new Morador(nome, cpf, contato);
+
+                    // carregar reclamações
+                    int qtdReclamacoes = Integer.parseInt(mapa.getOrDefault(prefixo + ".morador.reclamacoes.quantidade", "0"));
+                    for (int i = 0; i < qtdReclamacoes; i++) {
+                        String reclamacao = mapa.get(prefixo + ".morador.reclamacoes." + i);
+                        morador.adicionarReclamacao(reclamacao);
+                    }
+
+                    q.ocupar(morador);
+                }
             }
 
             return e;
@@ -71,6 +89,8 @@ public class PersistenciaEdificioTXT {
             return null;
         }
     }
+
+
 
     public void salvar(Edificio e) {
         try {
@@ -87,11 +107,21 @@ public class PersistenciaEdificioTXT {
                 bw.write("endereco.numero=" + end.getNumero() + "\n");
                 bw.write("endereco.bairro=" + end.getBairro() + "\n");
 
-
                 for (Quarto q : e.getQuartos()) {
-                    bw.write("quarto." + q.getIdQuarto() + ".ocupado=" + q.isOcupado() + "\n");
+                    String prefixo = "quarto." + q.getIdQuarto();
+                    bw.write(prefixo + ".ocupado=" + q.isOcupado() + "\n");
+
                     if (q.isOcupado() && q.getMorador() != null) {
-                        bw.write("quarto." + q.getIdQuarto() + ".morador=" + q.getMorador().getNome() + "\n");
+                        Morador m = q.getMorador();
+                        bw.write(prefixo + ".morador.nome=" + m.getNome() + "\n");
+                        bw.write(prefixo + ".morador.cpf=" + m.getCpf() + "\n");
+                        bw.write(prefixo + ".morador.contato=" + m.getContato() + "\n");
+
+                        // salvar reclamações
+                        bw.write(prefixo + ".morador.reclamacoes.quantidade=" + m.getReclamacoes().size() + "\n");
+                        for (int i = 0; i < m.getReclamacoes().size(); i++) {
+                            bw.write(prefixo + ".morador.reclamacoes." + i + "=" + m.getReclamacoes().get(i) + "\n");
+                        }
                     }
                 }
             }
@@ -100,4 +130,5 @@ public class PersistenciaEdificioTXT {
             System.err.println("Erro ao salvar arquivo de persistência do edifício.");
         }
     }
+
 }

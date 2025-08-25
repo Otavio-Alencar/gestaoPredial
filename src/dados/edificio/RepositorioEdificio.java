@@ -10,6 +10,8 @@ import negocio.excecao.NenhumQuartoLivreException;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RepositorioEdificio implements IRepositorioEdificio {
 
@@ -80,8 +82,12 @@ public class RepositorioEdificio implements IRepositorioEdificio {
     @Override
     public int buscarProximoQuartoLivre() {
         if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
-        for (int i = 0; i < edificio.getQuartos().size(); i++) {
-            if (!edificio.getQuartos().get(i).isOcupado()) return i;
+
+        for (Quarto quarto : edificio.getQuartos()) {
+            System.out.println("Quarto " + quarto.getIdQuarto() + " -> " + quarto.getStatus());
+            if (!quarto.isOcupado()) {
+                return quarto.getIdQuarto();
+            }
         }
         return -1;
     }
@@ -111,5 +117,18 @@ public class RepositorioEdificio implements IRepositorioEdificio {
             }
         }
         throw new MoradorNaoEncontradoException("Morador não encontrado em nenhum quarto ocupado.");
+    }
+
+    @Override
+    public List<Morador> getMoradores() {
+        if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
+
+        List<Morador> moradores = new ArrayList<>();
+        for (Quarto q : edificio.getQuartos()) {
+            if (q.isOcupado() && q.getMorador() != null) {
+                moradores.add(q.getMorador());
+            }
+        }
+        return moradores;
     }
 }

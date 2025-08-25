@@ -25,6 +25,12 @@ public class Morador extends Pessoa {
         }
     }
 
+    public ArrayList<String> getReclamacoes() {
+        return reclamacoes;
+    }
+
+
+
     public int getNumReclamacoes() {
         return numReclamacoes;
     }
