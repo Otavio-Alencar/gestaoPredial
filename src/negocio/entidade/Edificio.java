@@ -23,6 +23,14 @@ public class Edificio {
         }
     }
 
+    public StatusEdificio getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEdificio status) {
+        this.status = status;
+    }
+
     public String getImovel() {
         return imovel;
     }

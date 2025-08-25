@@ -1,6 +1,5 @@
 package iu.main;
 
-import dados.edificio.RepositorioEdificio;
 import dados.sindico.SessaoSindico;
 import negocio.NegocioEdificio;
 import negocio.entidade.Edificio;
@@ -13,6 +12,7 @@ import java.util.Scanner;
 public class EdificioIU {
     private final NegocioEdificio negocioEdificio = NegocioEdificio.getInstancia();
     private final Scanner scanner = new Scanner(System.in);
+
     public void cadastrarEdificio() {
         System.out.println("\n=== Cadastrar Edifício ===\n");
 
@@ -102,8 +102,6 @@ public class EdificioIU {
         }
     }
 
-
-
     public void menuEdificio() {
         if (SessaoSindico.getSindicoLogado() == null) {
             System.out.println("Erro: nenhum síndico logado.");
@@ -136,19 +134,20 @@ public class EdificioIU {
 
     private void verInformacoesEdificio() {
         try {
-            Edificio e = SessaoSindico.getSindicoLogado().getEdificio();
+            Edificio e = SessaoSindico.getSindicoLogado().getEdificio(); // usa edifício do síndico logado
             if (e == null) {
                 System.out.println("Nenhum edifício cadastrado.");
                 return;
             }
+
             System.out.println("\n=== Informações do Edifício ===");
             System.out.println("Nome: " + e.getImovel());
             System.out.println("Descrição: " + e.getDescricao());
             System.out.println("Quantidade de quartos: " + e.getQuantidadeDeQuartos());
-            System.out.println("CEP" + e.getEndereco().getCep());
+            System.out.println("CEP: " + e.getEndereco().getCep());
             System.out.println("Rua: " + e.getEndereco().getRua());
             System.out.println("Bairro: " + e.getEndereco().getBairro());
-            System.out.println("Numero: " + e.getEndereco().getNumero());
+            System.out.println("Número: " + e.getEndereco().getNumero());
             System.out.println("Complemento: " + e.getEndereco().getComplemento());
         } catch (Exception ex) {
             System.out.println("Erro ao exibir informações: " + ex.getMessage());
@@ -157,12 +156,87 @@ public class EdificioIU {
 
     private void editarEdificio() {
         try {
+            Edificio edificio = SessaoSindico.getSindicoLogado().getEdificio();
+            if (edificio == null) {
+                System.out.println("Nenhum edifício cadastrado para edição.");
+                return;
+            }
+
             System.out.println("\n=== Editar Edifício ===");
-            // Aqui você pode reaproveitar a lógica do cadastro, pedindo novos valores
-            // e chamando negocioEdificio.atualizarEdificio(...)
-            System.out.println("Funcionalidade de edição ainda não implementada.");
-        } catch (SindicoNaoLogado | SindicoJaTemEdificio e) {
+            System.out.println("Deixe em branco para manter o valor atual.\n");
+
+            // Nome
+            System.out.print("Nome atual (" + edificio.getImovel() + "): ");
+            String novoNome = scanner.nextLine().trim();
+            if (!novoNome.isEmpty()) {
+                edificio.setImovel(novoNome);
+            }
+
+            // Descrição
+            System.out.print("Descrição atual (" + edificio.getDescricao() + "): ");
+            String novaDescricao = scanner.nextLine().trim();
+            if (!novaDescricao.isEmpty()) {
+                edificio.setDescricao(novaDescricao);
+            }
+
+            // Quantidade de quartos
+            System.out.print("Quantidade de quartos atual (" + edificio.getQuantidadeDeQuartos() + "): ");
+            String qtdInput = scanner.nextLine().trim();
+            if (!qtdInput.isEmpty()) {
+                try {
+                    int novaQtd = Integer.parseInt(qtdInput);
+                    if (novaQtd > 0) {
+                        edificio.setQuantidadeDeQuartos(novaQtd);
+                    } else {
+                        System.out.println("Quantidade inválida! Mantido valor atual.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida! Mantido valor atual.");
+                }
+            }
+
+            // Endereço
+            Endereco endereco = edificio.getEndereco();
+
+            System.out.print("CEP atual (" + endereco.getCep() + "): ");
+            String novoCep = scanner.nextLine().trim();
+            if (!novoCep.isEmpty()) {
+                endereco.setCep(novoCep);
+            }
+
+            System.out.print("Rua atual (" + endereco.getRua() + "): ");
+            String novaRua = scanner.nextLine().trim();
+            if (!novaRua.isEmpty()) {
+                endereco.setRua(novaRua);
+            }
+
+            System.out.print("Bairro atual (" + endereco.getBairro() + "): ");
+            String novoBairro = scanner.nextLine().trim();
+            if (!novoBairro.isEmpty()) {
+                endereco.setBairro(novoBairro);
+            }
+
+            System.out.print("Número atual (" + endereco.getNumero() + "): ");
+            String novoNumero = scanner.nextLine().trim();
+            if (!novoNumero.isEmpty()) {
+                endereco.setNumero(novoNumero);
+            }
+
+            System.out.print("Complemento atual (" + endereco.getComplemento() + "): ");
+            String novoComplemento = scanner.nextLine().trim();
+            if (!novoComplemento.isEmpty()) {
+                endereco.setComplemento(novoComplemento);
+            }
+
+            negocioEdificio.atualizarEdificio(SessaoSindico.getSindicoLogado(), edificio);
+            System.out.println("Edifício atualizado com sucesso!");
+
+        } catch (SindicoNaoLogado e) {
             System.out.println("Erro: " + e.getMessage());
+        } catch (SindicoJaTemEdificio e) {
+            System.out.println("Erro: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Erro ao editar edifício: " + e.getMessage());
         }
     }
 
@@ -176,6 +250,11 @@ public class EdificioIU {
     }
 
     private void gerarRelatorio() {
+        Edificio e = SessaoSindico.getSindicoLogado().getEdificio();
+        if (e == null) {
+            System.out.println("Nenhum edifício cadastrado para gerar relatório.");
+        } else {
+            // aqui você coloca a lógica de relatório
+        }
     }
-
 }

@@ -13,8 +13,8 @@ public class NegocioEdificio {
 
     private final IRepositorioEdificio repo;
 
-    private NegocioEdificio() { // construtor privado
-        repo = RepositorioEdificio.getInstancia(); // usa singleton do repositório
+    private NegocioEdificio() {
+        repo = RepositorioEdificio.getInstancia(); // Polimorfismo: trata como interface
     }
 
     public static NegocioEdificio getInstancia() {

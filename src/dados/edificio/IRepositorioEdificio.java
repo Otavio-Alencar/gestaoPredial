@@ -1,17 +1,16 @@
 package dados.edificio;
 
-import dados.base.IRepositorioBase;
 import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
 import negocio.excecao.MoradorNaoEncontradoException;
+import negocio.excecao.NenhumQuartoLivreException;
 
-public interface IRepositorioEdificio extends IRepositorioBase<Edificio> {
-    void adicionarEdificio(Edificio edificio);
+public interface IRepositorioEdificio {
+    void adicionarEdificio(Edificio e);
     void removerEdificio();
-    void atualizarEdificio(Edificio edificio);
-
-    int buscarProximoQuartoLivre();
-    void preencherQuarto(Morador morador);
-    void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException;
+    void atualizarEdificio(Edificio e);
     Edificio getEdificio();
+    int buscarProximoQuartoLivre();
+    void preencherQuarto(Morador m) throws NenhumQuartoLivreException;
+    void removerDoQuarto(Morador m) throws MoradorNaoEncontradoException;
 }

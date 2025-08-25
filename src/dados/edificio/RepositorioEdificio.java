@@ -1,6 +1,6 @@
 package dados.edificio;
 
-import dados.base.RepositorioBase;
+import dados.persistencia.PersistenciaEdificioTXT;
 import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
@@ -8,12 +8,26 @@ import negocio.enums.StatusQuarto;
 import negocio.excecao.MoradorNaoEncontradoException;
 import negocio.excecao.NenhumQuartoLivreException;
 
-public class RepositorioEdificio extends RepositorioBase<Edificio> implements IRepositorioEdificio {
+import java.io.IOException;
+import java.nio.file.Files;
+
+public class RepositorioEdificio implements IRepositorioEdificio {
 
     private static RepositorioEdificio instancia;
+    private final PersistenciaEdificioTXT persistencia;
+    private Edificio edificio; // apenas 1 edifício
+    private final String caminhoArquivo;
 
     private RepositorioEdificio() {
-        super();
+        String baseDir = System.getProperty("user.dir");
+        this.caminhoArquivo = baseDir + "/src/dados/edificio/edificio.txt";
+        persistencia = new PersistenciaEdificioTXT(caminhoArquivo);
+
+        // carrega do arquivo se existir e não estiver vazio
+        Edificio e = persistencia.carregar();
+        if (e != null) {
+            edificio = e;
+        }
     }
 
     public static RepositorioEdificio getInstancia() {
@@ -23,58 +37,62 @@ public class RepositorioEdificio extends RepositorioBase<Edificio> implements IR
         return instancia;
     }
 
+    private boolean arquivoVazioOuInexistente() {
+        try {
+            if (!Files.exists(persistencia.getArquivoPath())) return true;
+            return Files.size(persistencia.getArquivoPath()) == 0;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return true;
+        }
+    }
+
     @Override
     public void adicionarEdificio(Edificio novoEdificio) {
-        lista.clear();  // só pode ter um edifício
-        adicionar(novoEdificio);
+        if (novoEdificio == null) throw new IllegalArgumentException("Edifício não pode ser nulo.");
+        edificio = novoEdificio;
+        persistencia.salvar(edificio);
     }
 
     @Override
     public void removerEdificio() {
-        if (!lista.isEmpty()) {
-            lista.clear();
+        edificio = null;
+        try {
+            Files.deleteIfExists(persistencia.getArquivoPath());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-    }
-
-    @Override
-    public void remover(Edificio edificio) {
-        lista.remove(edificio);
     }
 
     @Override
     public void atualizarEdificio(Edificio novoEdificio) {
-        if (!lista.isEmpty()) {
-            lista.set(0, novoEdificio);
-        } else {
-            adicionar(novoEdificio);
-        }
+        if (edificio == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
+        edificio = novoEdificio;
+        persistencia.salvar(edificio);
+    }
+
+    @Override
+    public Edificio getEdificio() {
+        if (edificio == null || arquivoVazioOuInexistente()) return null;
+        return edificio;
     }
 
     @Override
     public int buscarProximoQuartoLivre() {
-        Edificio edificio = getEdificio();
-        if (edificio == null || edificio.getQuartos() == null) {
-            throw new IllegalStateException("Nenhum edifício cadastrado.");
-        }
-
+        if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
         for (int i = 0; i < edificio.getQuartos().size(); i++) {
-            if (!edificio.getQuartos().get(i).isOcupado()) {
-                return i;
-            }
+            if (!edificio.getQuartos().get(i).isOcupado()) return i;
         }
         return -1;
     }
 
     @Override
     public void preencherQuarto(Morador morador) {
-        Edificio edificio = getEdificio();
-        if (edificio == null) {
-            throw new IllegalStateException("Nenhum edifício cadastrado.");
-        }
-
+        if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
         for (Quarto q : edificio.getQuartos()) {
-            if (q.getStatus() == StatusQuarto.LIVRE) {
+            if (!q.isOcupado()) {
                 q.ocupar(morador);
+                persistencia.salvar(edificio);
                 return;
             }
         }
@@ -83,27 +101,15 @@ public class RepositorioEdificio extends RepositorioBase<Edificio> implements IR
 
     @Override
     public void removerDoQuarto(Morador morador) throws MoradorNaoEncontradoException {
-        if (morador == null) {
-            throw new IllegalArgumentException("Morador não pode ser nulo.");
-        }
-
-        Edificio edificio = getEdificio();
-        if (edificio == null) {
-            throw new IllegalStateException("Nenhum edifício cadastrado.");
-        }
-
+        if (morador == null) throw new IllegalArgumentException("Morador não pode ser nulo.");
+        if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
         for (Quarto q : edificio.getQuartos()) {
-            if (q.getStatus() == StatusQuarto.OCUPADO && q.getMorador().equals(morador)) {
+            if (q.isOcupado() && q.getMorador().equals(morador)) {
                 q.liberar();
+                persistencia.salvar(edificio);
                 return;
             }
         }
-
         throw new MoradorNaoEncontradoException("Morador não encontrado em nenhum quarto ocupado.");
-    }
-
-    @Override
-    public Edificio getEdificio() {
-        return lista.isEmpty() ? null : lista.get(0);
     }
 }
