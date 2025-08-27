@@ -4,6 +4,7 @@ import negocio.NegocioEdificio;
 import negocio.NegocioListaEspera;
 import negocio.NegocioMorador;
 import negocio.entidade.*;
+import negocio.relatorio.RelatorioEdificio;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class Fachada {
     public Fachada() {
         this.negocioEdificio = NegocioEdificio.getInstancia();
         this.negocioListaEspera = NegocioListaEspera.getInstancia();
-        this.negocioMorador = new NegocioMorador(); // depende do repoEdificio
+        this.negocioMorador = new NegocioMorador();
     }
 
     // ==================== EDIFICIO ====================
@@ -34,6 +35,19 @@ public class Fachada {
 
     public boolean temEdificio() {
         return negocioEdificio.getEdificio() != null;
+    }
+
+    /**
+     * Gera um relatório em DOCX com os dados do edifício atual
+     * @param caminhoArquivo caminho completo do arquivo, por exemplo: "relatorios/edificio.docx"
+     */
+    public void gerarRelatorioEdificio(String caminhoArquivo) {
+        Edificio edificio = negocioEdificio.getEdificio();
+        if (edificio == null) {
+            throw new IllegalStateException("Nenhum edifício cadastrado para gerar relatório.");
+        }
+        RelatorioEdificio relatorio = new RelatorioEdificio(edificio, caminhoArquivo);
+        relatorio.gerar();
     }
 
     // ==================== MORADOR ====================

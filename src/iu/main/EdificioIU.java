@@ -8,6 +8,7 @@ import negocio.entidade.Sindico;
 import negocio.excecao.SindicoJaTemEdificio;
 import negocio.excecao.SindicoNaoLogado;
 
+import java.io.File;
 import java.util.Scanner;
 
 public class EdificioIU {
@@ -164,7 +165,18 @@ public class EdificioIU {
         if (e == null) {
             System.out.println("Nenhum edifício cadastrado para gerar relatório.");
         } else {
-            // Aqui você coloca a lógica de relatório
+            try {
+                String home = System.getProperty("user.home");
+                File pasta = new File(home + "/DocumentosGestaoPredial");
+                if (!pasta.exists()) {
+                    pasta.mkdirs(); // cria a pasta se não existir
+                }
+                String caminho = pasta + "/relatorio_edificio.docx";
+                fachada.gerarRelatorioEdificio(caminho);
+                System.out.println("Relatório gerado com sucesso em: " + caminho);
+            } catch (Exception ex) {
+                System.out.println("Erro ao gerar o relatório: " + ex.getMessage());
+            }
         }
     }
 
