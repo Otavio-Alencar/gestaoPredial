@@ -1,0 +1,21 @@
+# Arquivo de persistência do Edificio
+imovel=meu edificio
+descricao=legal
+quantidadeDeQuartos=5
+status=ATIVO
+endereco.rua=null
+endereco.numero=null
+endereco.bairro=sskslfkss
+quarto.1.ocupado=true
+quarto.1.morador.nome=otavio
+quarto.1.morador.cpf=07997881476
+quarto.1.morador.contato=99285919
+quarto.1.morador.reclamacoes.quantidade=0
+quarto.2.ocupado=true
+quarto.2.morador.nome=jaoo
+quarto.2.morador.cpf=3443535243243
+quarto.2.morador.contato=324234234324
+quarto.2.morador.reclamacoes.quantidade=0
+quarto.3.ocupado=false
+quarto.4.ocupado=false
+quarto.5.ocupado=false
