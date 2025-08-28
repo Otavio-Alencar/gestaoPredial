@@ -1,2 +1,0 @@
-# Arquivo de persistência da Lista de Espera
-total=0
