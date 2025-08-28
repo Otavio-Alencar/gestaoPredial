@@ -1,6 +1,7 @@
 package negocio.relatorio;
 
 import negocio.entidade.Edificio;
+import negocio.entidade.Quarto;
 
 public class RelatorioEdificio extends RelatorioBase {
 
@@ -13,15 +14,18 @@ public class RelatorioEdificio extends RelatorioBase {
 
     @Override
     protected void preencherDados() {
+        // Título
         adicionarTitulo("RELATÓRIO DO EDIFÍCIO");
-        adicionarEspaco(200);
+        adicionarEspaco(1);
 
+        // Informações do edifício
         adicionarSubtitulo("Informações do Edifício");
         adicionarLinha("Nome: " + edificio.getImovel());
         adicionarLinha("Descrição: " + edificio.getDescricao());
         adicionarLinha("Quantidade de quartos: " + edificio.getQuantidadeDeQuartos());
-        adicionarEspaco(150);
+        adicionarEspaco(1);
 
+        // Endereço
         if (edificio.getEndereco() != null) {
             adicionarSubtitulo("Endereço");
             adicionarLinha("CEP: " + edificio.getEndereco().getCep());
@@ -29,28 +33,29 @@ public class RelatorioEdificio extends RelatorioBase {
             adicionarLinha("Bairro: " + edificio.getEndereco().getBairro());
             adicionarLinha("Número: " + edificio.getEndereco().getNumero());
             adicionarLinha("Complemento: " + edificio.getEndereco().getComplemento());
-            adicionarEspaco(150);
+            adicionarEspaco(1);
         }
 
+        // Quartos
         if (edificio.getQuartos() != null && !edificio.getQuartos().isEmpty()) {
             adicionarSubtitulo("Quartos e Moradores");
-            for (var quarto : edificio.getQuartos()) {
-                StringBuilder info = new StringBuilder();
-                info.append("Quarto ID: ").append(quarto.getIdQuarto()).append("\n");
-
+            for (Quarto quarto : edificio.getQuartos()) {
+                String moradorInfo;
                 if (quarto.getMorador() != null) {
-                    info.append("Morador: ").append(quarto.getMorador().getNome()).append("\n")
-                            .append("CPF: ").append(quarto.getMorador().getCpf()).append("\n")
-                            .append("Reclamações: ").append(quarto.getMorador().getNumReclamacoes());
+                    moradorInfo = "Morador: " + quarto.getMorador().getNome() +
+                            " | CPF: " + quarto.getMorador().getCpf() +
+                            " | Reclamações: " + quarto.getMorador().getNumReclamacoes();
                 } else {
-                    info.append("Morador: Disponível");
+                    moradorInfo = "Morador: Disponível";
                 }
 
-                adicionarLinha(info.toString());
-                adicionarEspaco(100); // Espaço entre quartos
+                adicionarLinha("Quarto ID: " + quarto.getIdQuarto());
+                adicionarLinha(moradorInfo);
+                adicionarEspaco(1); // espaçamento entre quartos
             }
         }
 
+        // Rodapé
         adicionarLinhaItalico("Este relatório foi gerado automaticamente pelo sistema de gestão predial.");
     }
 }

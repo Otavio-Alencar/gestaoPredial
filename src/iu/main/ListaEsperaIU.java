@@ -1,14 +1,14 @@
 package iu.main;
 
-import negocio.NegocioListaEspera;
 import negocio.entidade.PessoaListaEspera;
 
+import java.io.File;
 import java.util.List;
 import java.util.Scanner;
-
+import fachada.FachadaListaEspera;
 public class ListaEsperaIU {
 
-    private final NegocioListaEspera negocioListaEspera =  NegocioListaEspera.getInstancia();
+    private final FachadaListaEspera fachada = new FachadaListaEspera();
     private final Scanner scanner = new Scanner(System.in);
 
     public void menuListaEspera() {
@@ -37,7 +37,7 @@ public class ListaEsperaIU {
     }
 
     private void verListaEspera() {
-        List<PessoaListaEspera> lista = negocioListaEspera.listarFila();
+        List<PessoaListaEspera> lista = fachada.listarFila();
         if (lista.isEmpty()) {
             System.out.println("⚠️ A lista de espera está vazia.");
             return;
@@ -62,9 +62,7 @@ public class ListaEsperaIU {
         boolean escolaPublica = lerBoolean("Estudou em Escola Pública? (s/n)");
         boolean baixaRenda = lerBoolean("É de Baixa Renda? (s/n)");
 
-        negocioListaEspera.adicionarPessoa(
-                nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda
-        );
+        fachada.adicionarPessoa(nome, cpf, contato, ppi, quilombola, pcd, escolaPublica, baixaRenda);
 
         System.out.println("\n✅ Pessoa adicionada com sucesso à lista de espera!");
     }
@@ -74,7 +72,7 @@ public class ListaEsperaIU {
         String cpf = lerTextoObrigatorio("Qual o CPF da pessoa que deseja remover");
 
         try {
-            negocioListaEspera.removerPessoa(cpf);
+            fachada.removerPessoa(cpf);
             System.out.println("✅ Removido com sucesso!");
         } catch (Exception e) {
             System.out.println("⚠️ Pessoa não encontrada na lista de espera.");
@@ -82,20 +80,29 @@ public class ListaEsperaIU {
     }
 
     private void gerarRelatorio() {
-        System.out.println("\n=== Relatório da Lista de Espera ===");
-        List<PessoaListaEspera> lista = negocioListaEspera.listarFila();
+        System.out.println("\n=== Gerando Relatório da Lista de Espera (Excel) ===");
 
-        if (lista.isEmpty()) {
-            System.out.println("A lista está vazia.");
+        if (!fachada.temPessoas()) {
+            System.out.println("⚠️ A lista está vazia. Nenhum relatório gerado.");
             return;
         }
 
-        for (PessoaListaEspera p : lista) {
-            System.out.println("Nome: " + p.getNome() +
-                    " | CPF: " + p.getCpf() +
-                    " | Contato: " + p.getContato() +
-                    " | Cotas: " + p.getTotalCotas() +
-                    " | Ordem: " + p.getOrdemChegada());
+        try {
+            String home = System.getProperty("user.home");
+            File pasta = new File(home, "DocumentosGestaoPredial");
+            if (!pasta.exists() && !pasta.mkdirs()) {
+                System.out.println("❌ Não foi possível criar a pasta para salvar o relatório.");
+                return;
+            }
+
+            String caminho = new File(pasta, "ListaEspera.xlsx").getAbsolutePath();
+            fachada.gerarRelatorioListaEspera(caminho);
+
+            System.out.println("✅ Relatório Excel gerado com sucesso em: " + caminho);
+
+        } catch (Exception e) {
+            System.out.println("❌ Erro ao gerar o relatório Excel: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

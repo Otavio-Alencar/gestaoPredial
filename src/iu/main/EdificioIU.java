@@ -1,19 +1,18 @@
 package iu.main;
 
 import dados.sindico.SessaoSindico;
-import fachada.Fachada;
 import negocio.entidade.Edificio;
 import negocio.entidade.Endereco;
 import negocio.entidade.Sindico;
 import negocio.excecao.SindicoJaTemEdificio;
 import negocio.excecao.SindicoNaoLogado;
-
+import fachada.FachadaEdificio;
 import java.io.File;
 import java.util.Scanner;
 
 public class EdificioIU {
 
-    private final Fachada fachada = new Fachada();
+    private final FachadaEdificio fachada = new FachadaEdificio();
     private final Scanner scanner = new Scanner(System.in);
     private final Sindico sindicoLogado = SessaoSindico.getSindicoLogado();
     public void cadastrarEdificio() {
@@ -103,17 +102,16 @@ public class EdificioIU {
         System.out.println("\n=== Editar Edifício ===");
         System.out.println("Deixe em branco para manter o valor atual.\n");
 
-        // Nome
+
         System.out.print("Nome atual (" + edificio.getImovel() + "): ");
         String novoNome = scanner.nextLine().trim();
         if (!novoNome.isEmpty()) edificio.setImovel(novoNome);
 
-        // Descrição
+
         System.out.print("Descrição atual (" + edificio.getDescricao() + "): ");
         String novaDescricao = scanner.nextLine().trim();
         if (!novaDescricao.isEmpty()) edificio.setDescricao(novaDescricao);
 
-        // Quantidade de quartos
         System.out.print("Quantidade de quartos atual (" + edificio.getQuantidadeDeQuartos() + "): ");
         String qtdInput = scanner.nextLine().trim();
         if (!qtdInput.isEmpty()) {
@@ -126,7 +124,7 @@ public class EdificioIU {
             }
         }
 
-        // Endereço
+
         Endereco endereco = edificio.getEndereco();
         System.out.print("CEP atual (" + endereco.getCep() + "): ");
         String novoCep = scanner.nextLine().trim();
@@ -163,20 +161,29 @@ public class EdificioIU {
     private void gerarRelatorio() {
         Edificio e = fachada.getEdificio();
         if (e == null) {
-            System.out.println("Nenhum edifício cadastrado para gerar relatório.");
-        } else {
-            try {
-                String home = System.getProperty("user.home");
-                File pasta = new File(home + "/DocumentosGestaoPredial");
-                if (!pasta.exists()) {
-                    pasta.mkdirs(); // cria a pasta se não existir
-                }
-                String caminho = pasta + "/relatorio_edificio.docx";
-                fachada.gerarRelatorioEdificio(caminho);
-                System.out.println("Relatório gerado com sucesso em: " + caminho);
-            } catch (Exception ex) {
-                System.out.println("Erro ao gerar o relatório: " + ex.getMessage());
+            System.out.println("⚠️ Nenhum edifício cadastrado para gerar relatório.");
+            return;
+        }
+
+        try {
+            // Pasta padrão do usuário
+            String home = System.getProperty("user.home");
+            File pasta = new File(home, "DocumentosGestaoPredial");
+            if (!pasta.exists() && !pasta.mkdirs()) {
+                System.out.println("❌ Não foi possível criar a pasta para salvar o relatório.");
+                return;
             }
+
+            // Caminho completo do arquivo Excel
+            String caminho = new File(pasta, "RelatorioEdificio.xlsx").getAbsolutePath();
+
+            // Gera o relatório Excel
+            fachada.gerarRelatorioEdificio(caminho); // adapte para chamar a versão Excel
+            System.out.println("✅ Relatório Excel gerado com sucesso em: " + caminho);
+
+        } catch (Exception ex) {
+            System.out.println("❌ Erro ao gerar o relatório: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 

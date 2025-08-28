@@ -1,26 +1,13 @@
 package iu.main;
 
-import negocio.NegocioListaEspera;
-import negocio.NegocioMorador;
 import negocio.entidade.Morador;
-import negocio.excecao.ListaEsperaVazia;
-import negocio.excecao.NenhumQuartoLivreException;
-import negocio.excecao.PessoaNaoEncontrada;
-import dados.sindico.SessaoSindico;
-
 import java.util.List;
 import java.util.Scanner;
-
+import fachada.FachadaMorador;
 public class MoradorIU {
 
     private final Scanner scanner = new Scanner(System.in);
-    private final NegocioListaEspera listaEspera;
-    private final NegocioMorador negocioMorador;
-
-    public MoradorIU() {
-        this.listaEspera = NegocioListaEspera.getInstancia(); // usa singleton
-        this.negocioMorador = new NegocioMorador(); // injeta lista de espera
-    }
+    private final FachadaMorador fachada = new FachadaMorador();
 
     public void menuMorador() {
         boolean voltar = false;
@@ -32,6 +19,7 @@ public class MoradorIU {
             System.out.println("[3] Listar moradores");
             System.out.println("[4] Adicionar reclamação");
             System.out.println("[5] Voltar");
+
             System.out.print("Escolha uma opção: ");
 
             int opcao = scanner.nextInt();
@@ -50,57 +38,62 @@ public class MoradorIU {
 
     private void cadastrarMorador() {
         try {
-            negocioMorador.cadastrarMorador(listaEspera);
+            fachada.cadastrarProximoMorador();
             System.out.println("Morador cadastrado e alocado em quarto com sucesso!");
-        } catch (ListaEsperaVazia e) {
-            System.out.println("⚠ Lista de espera vazia. Não há pessoas para cadastrar.");
-        } catch (NenhumQuartoLivreException e) {
-            System.out.println("⚠ Nenhum quarto disponível no edifício.");
         } catch (RuntimeException e) {
-            System.out.println("Erro ao cadastrar morador: " + e.getMessage());
+            System.out.println("⚠ Erro ao cadastrar morador: " + e.getMessage());
         }
     }
 
     private void removerMorador() {
-        System.out.print("Digite o CPF do morador a ser removido: ");
-        String cpf = scanner.nextLine().trim();
-
+        String cpf = lerTextoObrigatorio("Digite o CPF do morador a ser removido");
         try {
-            negocioMorador.removerMorador(cpf);
+            fachada.removerMorador(cpf);
             System.out.println("Morador removido com sucesso!");
-        } catch (PessoaNaoEncontrada e) {
-            System.out.println("⚠ Morador não encontrado.");
-        } catch (RuntimeException e) {
-            System.out.println("Erro ao remover morador: " + e.getMessage());
-        }
-    }
-
-    private void listarMoradores() {
-        try {
-            List<Morador> moradores = negocioMorador.listarMoradores();
-            System.out.println("\n=== Moradores Registrados ===");
-            for (Morador m : moradores) {
-                System.out.printf("Nome: %s | CPF: %s | Contato: %s | Reclamações: %d\n",
-                        m.getNome(), m.getCpf(), m.getContato(), m.getNumReclamacoes());
-            }
         } catch (RuntimeException e) {
             System.out.println("⚠ " + e.getMessage());
         }
     }
 
+    private void listarMoradores() {
+        List<Morador> moradores = fachada.listarMoradores();
+        if (moradores.isEmpty()) {
+            System.out.println("⚠ Nenhum morador cadastrado.");
+            return;
+        }
+
+        System.out.println("\n=== Moradores Registrados ===");
+        for (Morador m : moradores) {
+            System.out.printf("Nome: %s | CPF: %s | Contato: %s | Reclamações: %d\n",
+                    m.getNome(), m.getCpf(), m.getContato(), m.getNumReclamacoes());
+        }
+    }
+
     private void adicionarReclamacao() {
-        System.out.print("Digite o CPF do morador: ");
-        String cpf = scanner.nextLine().trim();
-        System.out.print("Digite a reclamação: ");
-        String reclamacao = scanner.nextLine().trim();
+        String cpf = lerTextoObrigatorio("Digite o CPF do morador");
+        String reclamacao = lerTextoObrigatorio("Digite a reclamação");
 
         try {
-            negocioMorador.adicionarReclamacao(cpf, reclamacao);
+            fachada.adicionarReclamacao(cpf, reclamacao);
             System.out.println("Reclamação adicionada com sucesso!");
-        } catch (PessoaNaoEncontrada e) {
-            System.out.println("⚠ Morador não encontrado.");
         } catch (RuntimeException e) {
-            System.out.println("Erro ao adicionar reclamação: " + e.getMessage());
+            System.out.println("⚠ " + e.getMessage());
         }
+    }
+
+
+
+    // ================= Métodos auxiliares =================
+
+    private String lerTextoObrigatorio(String campo) {
+        String valor;
+        do {
+            System.out.print(campo + ": ");
+            valor = scanner.nextLine().trim();
+            if (valor.isEmpty()) {
+                System.out.println("⚠️ O campo '" + campo + "' não pode ficar vazio. Tente novamente.");
+            }
+        } while (valor.isEmpty());
+        return valor;
     }
 }

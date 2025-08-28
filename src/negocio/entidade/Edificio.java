@@ -55,8 +55,37 @@ public class Edificio {
         return quantidadeDeQuartos;
     }
 
-    public void setQuantidadeDeQuartos(int quantidadeDeQuartos) {
-        this.quantidadeDeQuartos = quantidadeDeQuartos;
+    public void setQuantidadeDeQuartos(int novaQuantidade) {
+        if (novaQuantidade <= 0) {
+            throw new IllegalArgumentException("A quantidade de quartos deve ser maior que 0.");
+        }
+
+        int atual = this.quantidadeDeQuartos;
+
+        // Caso de aumento de quartos
+        if (novaQuantidade > atual) {
+            for (int i = atual + 1; i <= novaQuantidade; i++) {
+                quartos.add(new Quarto(i));
+            }
+        }
+        // Caso de redução de quartos
+        else if (novaQuantidade < atual) {
+            // Quartos que seriam removidos (do fim da lista para o começo)
+            for (int i = atual; i > novaQuantidade; i--) {
+                Quarto quarto = getQuartoPorId(i);
+                if (quarto != null) {
+                    if (quarto.isOcupado()) {
+                        throw new IllegalStateException(
+                                "Não é possível reduzir a quantidade de quartos. O quarto " + i + " está ocupado."
+                        );
+                    }
+                    quartos.remove(quarto);
+                }
+            }
+        }
+
+        // Atualiza a quantidade registrada
+        this.quantidadeDeQuartos = novaQuantidade;
     }
 
     public ArrayList<Quarto> getQuartos() {
