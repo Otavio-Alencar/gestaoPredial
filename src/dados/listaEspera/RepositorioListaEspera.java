@@ -7,7 +7,7 @@ import negocio.entidade.ListaEspera;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RepositorioListaEspera {
+public class RepositorioListaEspera implements IRepositorioListaEspera {
 
     private static RepositorioListaEspera instancia;
     private final ListaEspera listaEspera;
@@ -34,7 +34,7 @@ public class RepositorioListaEspera {
         }
         return instancia;
     }
-
+    @Override
     public void adicionarPessoa(String nome, String cpf, String contato,
                                 boolean ppi, boolean quilombola, boolean pcd,
                                 boolean escolaPublica, boolean baixaRenda) {
@@ -44,16 +44,16 @@ public class RepositorioListaEspera {
         listaEspera.getListaEspera().add(pessoa);
         persistencia.salvar(listaEspera);
     }
-
+    @Override
     public void removerPessoa(String cpf) {
         listaEspera.getListaEspera().removeIf(p -> p.getCpf().equals(cpf));
         persistencia.salvar(listaEspera);
     }
-
+    @Override
     public int tamanhoFila() {
         return listaEspera.getListaEspera().size();
     }
-
+    @Override
     public List<PessoaListaEspera> getPessoas() {
         return new ArrayList<>(listaEspera.getListaEspera());
     }

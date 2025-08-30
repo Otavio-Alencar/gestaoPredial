@@ -3,14 +3,16 @@ package dados.listaEspera;
 import dados.base.IRepositorioBase;
 import negocio.entidade.PessoaListaEspera;
 
-public interface IRepositorioListaEspera extends IRepositorioBase<PessoaListaEspera> {
+import java.util.List;
+
+public interface IRepositorioListaEspera{
     void adicionarPessoa(String nome, String cpf, String contato,
                          boolean ppi, boolean quilombola, boolean pcd,
                          boolean escolaPublica, boolean baixaRenda);
-
-    PessoaListaEspera chamarProxima();
-    PessoaListaEspera verProxima();
-    void listarFila();
+    void removerPessoa(String cpf);
+WW
+    ;
+    List<PessoaListaEspera>  getPessoas();
     int tamanhoFila();
-    void removerPessoa(int id);
+
 }
