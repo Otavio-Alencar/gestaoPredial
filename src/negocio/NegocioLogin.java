@@ -7,13 +7,39 @@ import negocio.excecao.SindicoException.JaTemSindicoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * Classe responsável pela lógica de negócio relacionada ao login e gerenciamento do síndico do sistema.
+ * <p>
+ * Essa classe utiliza um {@link IRepositorioLogin} para persistir, autenticar, alterar e remover
+ * as informações do síndico. Também garante que apenas um síndico possa ser cadastrado no sistema.
+ * @author Otavio Alencar & Erik Nascimento
+ * @version 1.0
+ * </p>
+ */
 public class NegocioLogin {
 
+    /** Repositório para manipulação dos dados do síndico. */
     private IRepositorioLogin repositorio;
+
+    /**
+     * Construtor da classe que inicializa o repositório de login.
+     *
+     * @param login implementação de {@link IRepositorioLogin} responsável por persistência de dados.
+     */
     public NegocioLogin(IRepositorioLogin login) {
         this.repositorio = login;
-
     }
+
+    /**
+     * Cadastra um novo síndico no sistema.
+     * <p>
+     * Caso já exista um síndico cadastrado, uma {@link JaTemSindicoException} será lançada.
+     * Se o arquivo de dados ainda não existir, ele será criado automaticamente.
+     * </p>
+     *
+     * @param sindico objeto {@link Sindico} contendo os dados do síndico.
+     * @throws JaTemSindicoException se já houver um síndico cadastrado.
+     */
     public void cadastrarSindico(Sindico sindico) throws JaTemSindicoException {
         try {
             if (repositorio.naoTemSindico()) {
@@ -32,6 +58,14 @@ public class NegocioLogin {
         }
     }
 
+    /**
+     * Autentica um síndico no sistema com base no nome e senha informados.
+     *
+     * @param nome  nome do síndico.
+     * @param senha senha do síndico.
+     * @return o objeto {@link Sindico} autenticado.
+     * @throws RuntimeException se não houver síndico cadastrado ou ocorrer um erro de leitura.
+     */
     public Sindico autenticarSindico(String nome, String senha) {
         try {
             return repositorio.autenticar(nome, senha);
@@ -42,7 +76,11 @@ public class NegocioLogin {
         }
     }
 
-
+    /**
+     * Remove o síndico cadastrado do sistema.
+     *
+     * @throws RuntimeException se ocorrer um erro de I/O ao tentar remover o síndico.
+     */
     public void removerSindico() {
         try {
             repositorio.removerSindico();
@@ -50,12 +88,18 @@ public class NegocioLogin {
             throw new RuntimeException("Erro ao remover síndico: " + e.getMessage(), e);
         }
     }
-    void alterarSindico(Sindico sindico){
-        try{
+
+    /**
+     * Altera os dados do síndico cadastrado.
+     *
+     * @param sindico objeto {@link Sindico} contendo os novos dados.
+     * @throws RuntimeException se ocorrer um erro de I/O ao tentar alterar os dados.
+     */
+    void alterarSindico(Sindico sindico) {
+        try {
             repositorio.alterarSindico(sindico);
         } catch (IOException e) {
             throw new RuntimeException("Erro ao alterar síndico: " + e.getMessage(), e);
         }
-    };
-
+    }
 }

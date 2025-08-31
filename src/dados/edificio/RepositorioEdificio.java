@@ -4,7 +4,7 @@ import dados.persistencia.PersistenciaEdificioTXT;
 import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
 import negocio.entidade.Quarto;
-import negocio.enums.StatusQuarto;
+import negocio.NegocioListaEspera;
 import negocio.excecao.MoradorNaoEncontradoException;
 import negocio.excecao.NenhumQuartoLivreException;
 
@@ -17,15 +17,15 @@ public class RepositorioEdificio implements IRepositorioEdificio {
 
     private static RepositorioEdificio instancia;
     private final PersistenciaEdificioTXT persistencia;
-    private Edificio edificio; // apenas 1 edifício
+    private Edificio edificio;
     private final String caminhoArquivo;
-
+    private final NegocioListaEspera negocioListaEspera;
     private RepositorioEdificio() {
+        this.negocioListaEspera = NegocioListaEspera.getInstancia();
         String baseDir = System.getProperty("user.dir");
         this.caminhoArquivo = baseDir + "/src/dados/edificio/edificio.txt";
         persistencia = new PersistenciaEdificioTXT(caminhoArquivo);
 
-        // carrega do arquivo se existir e não estiver vazio
         Edificio e = persistencia.carregar();
         if (e != null) {
             edificio = e;
@@ -61,6 +61,7 @@ public class RepositorioEdificio implements IRepositorioEdificio {
         edificio = null;
         try {
             Files.deleteIfExists(persistencia.getArquivoPath());
+            negocioListaEspera.removerPersistencia();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -93,7 +94,7 @@ public class RepositorioEdificio implements IRepositorioEdificio {
     }
 
     @Override
-    public void preencherQuarto(Morador morador) {
+    public void preencherQuarto(Morador morador) throws NenhumQuartoLivreException {
         if (getEdificio() == null) throw new IllegalStateException("Nenhum edifício cadastrado.");
         for (Quarto q : edificio.getQuartos()) {
             if (!q.isOcupado()) {

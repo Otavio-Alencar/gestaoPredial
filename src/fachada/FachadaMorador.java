@@ -30,6 +30,8 @@ public class FachadaMorador {
             System.out.println(e.getMessage());
         } catch (RuntimeException e) {
             throw new RuntimeException("Erro ao cadastrar morador: " + e.getMessage(), e);
+        } catch (PessoaNaoEncontradaException e) {
+            throw new RuntimeException(e);
         }
     }
 
