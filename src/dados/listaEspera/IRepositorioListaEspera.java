@@ -1,6 +1,6 @@
 package dados.listaEspera;
 
-import dados.base.IRepositorioBase;
+
 import negocio.entidade.PessoaListaEspera;
 
 import java.util.List;
@@ -10,7 +10,7 @@ public interface IRepositorioListaEspera{
                          boolean ppi, boolean quilombola, boolean pcd,
                          boolean escolaPublica, boolean baixaRenda);
     void removerPessoa(String cpf);
-WW
+
     ;
     List<PessoaListaEspera>  getPessoas();
     int tamanhoFila();

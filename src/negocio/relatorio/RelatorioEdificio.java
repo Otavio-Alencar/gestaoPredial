@@ -44,7 +44,8 @@ public class RelatorioEdificio extends RelatorioBase {
                 if (quarto.getMorador() != null) {
                     moradorInfo = "Morador: " + quarto.getMorador().getNome() +
                             " | CPF: " + quarto.getMorador().getCpf() +
-                            " | Reclamações: " + quarto.getMorador().getNumReclamacoes();
+                            " | Reclamações: " + quarto.getMorador().getNumReclamacoes()+
+                            " | Status: " + quarto.getMorador().getStatus();
                 } else {
                     moradorInfo = "Morador: Disponível";
                 }

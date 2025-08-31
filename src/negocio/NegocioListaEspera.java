@@ -2,7 +2,9 @@ package negocio;
 
 import dados.listaEspera.RepositorioListaEspera;
 import negocio.entidade.PessoaListaEspera;
-import negocio.excecao.PessoaNaoEncontrada;
+import negocio.estrategias.EstrategiaOrdenacao;
+import negocio.estrategias.OrdenacaoPorCotasEOrdem;
+import negocio.excecao.ListaDeEsperaException.PessoaNaoEncontradaException;
 
 import java.util.List;
 import java.util.PriorityQueue;
@@ -14,25 +16,17 @@ public class NegocioListaEspera {
     private final RepositorioListaEspera repositorio;
     private final PriorityQueue<PessoaListaEspera> fila;
     private int contadorOrdem;
+    private EstrategiaOrdenacao estrategia;
 
     private NegocioListaEspera() {
         repositorio = RepositorioListaEspera.getInstancia();
 
-        // Inicializa contador baseado na última pessoa persistida
         contadorOrdem = repositorio.getPessoas().stream()
                 .mapToInt(PessoaListaEspera::getOrdemChegada)
                 .max()
                 .orElse(0) + 1;
-
-        // Inicializa fila com ordenação por total de cotas e ordem de chegada
-        fila = new PriorityQueue<>(
-                (p1, p2) -> {
-                    int diff = Integer.compare(p2.getTotalCotas(), p1.getTotalCotas());
-                    if (diff != 0) return diff;
-                    return Integer.compare(p1.getOrdemChegada(), p2.getOrdemChegada());
-                }
-        );
-
+        estrategia = new OrdenacaoPorCotasEOrdem();
+        this.fila = new PriorityQueue<>(estrategia.getComparator());
         fila.addAll(repositorio.getPessoas());
     }
 
@@ -77,7 +71,7 @@ public class NegocioListaEspera {
                 .toList();
     }
 
-    public void removerPessoa(String cpf) {
+    public void removerPessoa(String cpf) throws PessoaNaoEncontradaException {
         PessoaListaEspera pessoaParaRemover = null;
         for (PessoaListaEspera p : fila) {
             if (p.getCpf().equals(cpf)) {
@@ -90,7 +84,7 @@ public class NegocioListaEspera {
             fila.remove(pessoaParaRemover);
             repositorio.removerPessoa(pessoaParaRemover.getCpf());
         } else {
-            throw new PessoaNaoEncontrada();
+            throw new PessoaNaoEncontradaException();
         }
     }
 

@@ -4,9 +4,9 @@ import dados.edificio.RepositorioEdificio;
 import dados.edificio.IRepositorioEdificio;
 import negocio.entidade.Morador;
 import negocio.entidade.PessoaListaEspera;
-import negocio.excecao.ListaEsperaVazia;
+import negocio.excecao.ListaDeEsperaException.ListaEsperaVaziaException;
 import negocio.excecao.NenhumQuartoLivreException;
-import negocio.excecao.PessoaNaoEncontrada;
+import negocio.excecao.ListaDeEsperaException.PessoaNaoEncontradaException;
 import negocio.excecao.MoradorNaoEncontradoException;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class NegocioMorador {
     }
 
     // Cadastra próximo morador da fila no próximo quarto disponível
-    public void cadastrarMorador(NegocioListaEspera listaEspera) {
+    public void cadastrarMorador(NegocioListaEspera listaEspera) throws ListaEsperaVaziaException, NenhumQuartoLivreException {
         if (repoEdificio.getEdificio() == null) {
             throw new RuntimeException("Nenhum edifício cadastrado para o síndico.");
         }
@@ -32,7 +32,7 @@ public class NegocioMorador {
 
         PessoaListaEspera pessoa = listaEspera.verProxima();
         if (pessoa == null) {
-            throw new ListaEsperaVazia();
+            throw new ListaEsperaVaziaException();
         }
 
         Morador morador = new Morador(pessoa.getNome(), pessoa.getCpf(), pessoa.getContato());
@@ -43,10 +43,10 @@ public class NegocioMorador {
     }
 
     // Remove morador do prédio
-    public void removerMorador(String cpf) {
+    public void removerMorador(String cpf) throws PessoaNaoEncontradaException {
         Morador morador = buscarMorador(cpf);
         if (morador == null) {
-            throw new PessoaNaoEncontrada();
+            throw new PessoaNaoEncontradaException();
         }
 
         try {
@@ -69,12 +69,15 @@ public class NegocioMorador {
     }
 
     // Adiciona uma reclamação a um morador
-    public void adicionarReclamacao(String cpf, String reclamacao) {
+    public void adicionarReclamacao(String cpf, String reclamacao) throws PessoaNaoEncontradaException {
         Morador morador = buscarMorador(cpf);
         if (morador != null) {
             morador.adicionarReclamacao(reclamacao);
+            if(morador.getNumReclamacoes() > 3){
+                morador.setStatus();
+            }
         } else {
-            throw new PessoaNaoEncontrada();
+            throw new PessoaNaoEncontradaException();
         }
     }
 

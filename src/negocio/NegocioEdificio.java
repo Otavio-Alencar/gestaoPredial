@@ -6,6 +6,9 @@ import negocio.entidade.Edificio;
 import negocio.entidade.Morador;
 import negocio.entidade.Sindico;
 import negocio.excecao.*;
+import negocio.excecao.SindicoException.SindicoJaTemEdificioException;
+import negocio.excecao.SindicoException.SindicoNaoLogadoException;
+import negocio.excecao.SindicoException.SindicoNaoTemEdificioException;
 
 public class NegocioEdificio {
 
@@ -24,25 +27,25 @@ public class NegocioEdificio {
         return instancia;
     }
 
-    public void adicionarEdificio(Sindico sindicoLogado, Edificio edificio) {
-        if (sindicoLogado == null) throw new SindicoNaoLogado();
-        if (sindicoLogado.getEdificio() != null) throw new SindicoJaTemEdificio();
+    public void adicionarEdificio(Sindico sindicoLogado, Edificio edificio) throws SindicoJaTemEdificioException, SindicoNaoLogadoException {
+        if (sindicoLogado == null) throw new SindicoNaoLogadoException();
+        if (sindicoLogado.getEdificio() != null) throw new SindicoJaTemEdificioException();
 
         repo.adicionarEdificio(edificio);
         sindicoLogado.setEdificio(edificio);
     }
 
-    public void removerEdificio(Sindico sindicoLogado) {
-        if (sindicoLogado == null) throw new SindicoNaoLogado();
-        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificio();
+    public void removerEdificio(Sindico sindicoLogado) throws SindicoNaoLogadoException, SindicoNaoTemEdificioException {
+        if (sindicoLogado == null) throw new SindicoNaoLogadoException();
+        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificioException();
 
         repo.removerEdificio();
         sindicoLogado.setEdificio(null);
     }
 
-    public void atualizarEdificio(Sindico sindicoLogado, Edificio novoEdificio) {
-        if (sindicoLogado == null) throw new SindicoNaoLogado();
-        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificio();
+    public void atualizarEdificio(Sindico sindicoLogado, Edificio novoEdificio) throws SindicoNaoLogadoException, SindicoNaoTemEdificioException {
+        if (sindicoLogado == null) throw new SindicoNaoLogadoException();
+        if (sindicoLogado.getEdificio() == null) throw new SindicoNaoTemEdificioException();
 
         repo.atualizarEdificio(novoEdificio);
         sindicoLogado.setEdificio(novoEdificio);
@@ -60,7 +63,7 @@ public class NegocioEdificio {
         return repo.getEdificio();
     }
 
-    public void preencherQuarto(Morador morador) {
+    public void preencherQuarto(Morador morador) throws NenhumQuartoLivreException {
         if (buscarProximoQuartoLivre() != -1) {
             repo.preencherQuarto(morador);
         } else {
