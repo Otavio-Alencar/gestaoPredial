@@ -4,8 +4,6 @@ import dados.sindico.SessaoSindico;
 import negocio.entidade.Edificio;
 import negocio.entidade.Endereco;
 import negocio.entidade.Sindico;
-import negocio.excecao.SindicoJaTemEdificio;
-import negocio.excecao.SindicoNaoLogado;
 import fachada.FachadaEdificio;
 import java.io.File;
 import java.util.Scanner;
@@ -35,11 +33,7 @@ public class EdificioIU {
         try {
             fachada.cadastrarEdificio(sindicoLogado, novoEdificio);
             System.out.println("✅ Edifício cadastrado com sucesso!");
-        } catch (SindicoNaoLogado e) {
-            System.out.println("⚠️ Erro: nenhum síndico logado.");
-        } catch (SindicoJaTemEdificio e) {
-            System.out.println("⚠️ Erro: o síndico já possui um edifício cadastrado.");
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             System.out.println("⚠️ Erro ao cadastrar edifício: " + e.getMessage());
         }
     }
@@ -150,12 +144,8 @@ public class EdificioIU {
     }
 
     private void removerEdificio(Sindico sindicoLogado) {
-        try {
-            fachada.removerEdificio(sindicoLogado);
-            System.out.println("✅ Edifício removido com sucesso!");
-        } catch (SindicoNaoLogado e) {
-            System.out.println("⚠️ Erro: " + e.getMessage());
-        }
+        fachada.removerEdificio(sindicoLogado);
+        System.out.println("✅ Edifício removido com sucesso!");
     }
 
     private void gerarRelatorio() {

@@ -4,7 +4,7 @@ import dados.sindico.RepositorioLogin;
 import dados.sindico.SessaoSindico;
 import negocio.NegocioLogin;
 import negocio.entidade.Sindico;
-import negocio.excecao.JaTemSindicoException;
+import negocio.excecao.SindicoException.JaTemSindicoException;
 
 import java.util.Scanner;
 

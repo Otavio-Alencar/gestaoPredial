@@ -3,6 +3,9 @@ package fachada;
 import negocio.NegocioEdificio;
 import negocio.entidade.Edificio;
 import negocio.entidade.Sindico;
+import negocio.excecao.SindicoException.SindicoJaTemEdificioException;
+import negocio.excecao.SindicoException.SindicoNaoLogadoException;
+import negocio.excecao.SindicoException.SindicoNaoTemEdificioException;
 import negocio.relatorio.RelatorioEdificio;
 
 public class FachadaEdificio {
@@ -14,11 +17,20 @@ public class FachadaEdificio {
     }
 
     public void cadastrarEdificio(Sindico sindicoLogado, Edificio edificio) {
-        negocioEdificio.adicionarEdificio(sindicoLogado, edificio);
+        try {
+            negocioEdificio.adicionarEdificio(sindicoLogado, edificio);
+        } catch (SindicoNaoLogadoException | SindicoJaTemEdificioException e) {
+            System.out.println(e.getMessage());
+
+        }
     }
 
     public void removerEdificio(Sindico sindicoLogado) {
-        negocioEdificio.removerEdificio(sindicoLogado);
+        try{
+            negocioEdificio.removerEdificio(sindicoLogado);
+        }catch(SindicoNaoLogadoException | SindicoNaoTemEdificioException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public Edificio getEdificio() {

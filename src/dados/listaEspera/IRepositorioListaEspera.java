@@ -9,6 +9,7 @@ public interface IRepositorioListaEspera{
                          boolean ppi, boolean quilombola, boolean pcd,
                          boolean escolaPublica, boolean baixaRenda);
     void removerPessoa(String cpf);
+
     List<PessoaListaEspera>  getPessoas();
     int tamanhoFila();
 

@@ -2,6 +2,7 @@ package fachada;
 
 import negocio.NegocioListaEspera;
 import negocio.entidade.PessoaListaEspera;
+import negocio.excecao.ListaDeEsperaException.PessoaNaoEncontradaException;
 import negocio.relatorio.RelatorioListaEspera;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class FachadaListaEspera {
         return negocioListaEspera.chamarProxima();
     }
 
-    public void removerPessoa(String cpf) {
+    public void removerPessoa(String cpf) throws PessoaNaoEncontradaException {
         negocioListaEspera.removerPessoa(cpf);
     }
 

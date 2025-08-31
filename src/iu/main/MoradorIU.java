@@ -4,6 +4,8 @@ import negocio.entidade.Morador;
 import java.util.List;
 import java.util.Scanner;
 import fachada.FachadaMorador;
+import negocio.excecao.ListaDeEsperaException.PessoaNaoEncontradaException;
+
 public class MoradorIU {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -52,6 +54,8 @@ public class MoradorIU {
             System.out.println("Morador removido com sucesso!");
         } catch (RuntimeException e) {
             System.out.println("⚠ " + e.getMessage());
+        } catch (PessoaNaoEncontradaException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,8 +68,11 @@ public class MoradorIU {
 
         System.out.println("\n=== Moradores Registrados ===");
         for (Morador m : moradores) {
-            System.out.printf("Nome: %s | CPF: %s | Contato: %s | Reclamações: %d\n",
-                    m.getNome(), m.getCpf(), m.getContato(), m.getNumReclamacoes());
+            System.out.println("Nome:"+  m.getNome() +
+                    "|" + "CPF: "+ m.getCpf() +"|" +
+                    "Contato: "+m.getContato()+"|"+
+                    "Reclamações: "+m.getNumReclamacoes()+ "|"+
+                    "Status: "+ m.getStatus());
         }
     }
 
@@ -76,7 +83,7 @@ public class MoradorIU {
         try {
             fachada.adicionarReclamacao(cpf, reclamacao);
             System.out.println("Reclamação adicionada com sucesso!");
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | PessoaNaoEncontradaException e) {
             System.out.println("⚠ " + e.getMessage());
         }
     }

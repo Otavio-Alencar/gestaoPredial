@@ -38,5 +38,6 @@ public class Morador extends Pessoa {
     public void adicionarReclamacao(String reclamacao) {
         reclamacoes.add(reclamacao);
         this.numReclamacoes++;
+
     }
 }

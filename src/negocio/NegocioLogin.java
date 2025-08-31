@@ -2,7 +2,7 @@ package negocio;
 
 import dados.sindico.IRepositorioLogin;
 import negocio.entidade.Sindico;
-import negocio.excecao.JaTemSindicoException;
+import negocio.excecao.SindicoException.JaTemSindicoException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,7 +14,7 @@ public class NegocioLogin {
         this.repositorio = login;
 
     }
-    public void cadastrarSindico(Sindico sindico) {
+    public void cadastrarSindico(Sindico sindico) throws JaTemSindicoException {
         try {
             if (repositorio.naoTemSindico()) {
                 repositorio.cadastrarSindico(sindico);
