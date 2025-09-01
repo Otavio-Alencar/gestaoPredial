@@ -14,7 +14,7 @@ public class HashSenha {
             }
             return sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Algoritmo SHA-256 não disponível", e);
+            throw new RuntimeException("Algoritmo SHA-256 não está disponível", e);
         }
     }
     public static boolean verificarHash(String senha, String hashSalvo) {
